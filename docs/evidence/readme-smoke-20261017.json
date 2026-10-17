@@ -1,0 +1,68 @@
+{
+  "date_utc": "2026-10-17T21:26:58.473817+00:00",
+  "implementation_base": "67e8bfb22a3281092c0e4bded0a3b702b279b486",
+  "evaluation": "Documentation smoke with synthetic fixtures and real local Git; no model, remote network, GUI or CI execution",
+  "result": "passed",
+  "scenario_count": 11,
+  "command_count": 113,
+  "scenarios": [
+    {
+      "name": "quickstart: history lint, version-scoped queries, vault check",
+      "result": "passed"
+    },
+    {
+      "name": "CLI help matches documented entrypoints",
+      "result": "passed"
+    },
+    {
+      "name": "Git hook installation/status/check in disposable clone only",
+      "result": "passed"
+    },
+    {
+      "name": "ingest example: new source, synthesis/index/log, contradiction warning, unchanged old raw, staged vault, hooked commit",
+      "result": "passed"
+    },
+    {
+      "name": "record and --record options append events; refreshed vault passes staged check",
+      "result": "passed"
+    },
+    {
+      "name": "documented conflict reconciliation: stage canonical, restore generated vault, regenerate, validate both parents, merge on contrib and fast-forward main",
+      "result": "passed"
+    },
+    {
+      "name": "consumer bootstrap, fetch, upgrade and rollback using local transport in sandbox",
+      "result": "passed"
+    },
+    {
+      "name": "recursive consumer clone and submodule init",
+      "result": "passed"
+    },
+    {
+      "name": "separate portable vault create/check/refresh",
+      "result": "passed"
+    },
+    {
+      "name": "README end-to-end demo and follow-up commands: A/B pin independence, queries, raw preservation, rollback, project privacy, vault snapshots",
+      "result": "passed"
+    },
+    {
+      "name": "Git hook uninstall restores unset config in disposable clone",
+      "result": "passed"
+    }
+  ],
+  "notes": [
+    "113 subprocess calls are grouped into 11 smoke scenarios; not 113 unit tests.",
+    "The Git clone/fetch examples used disposable local remotes, not GitHub; no external publication was attempted.",
+    "Hook install/uninstall changed disposable clone configuration only.",
+    "The implementation code is unchanged from the recorded public baseline."
+  ],
+  "documentation_checks": {
+    "files": 7,
+    "local_links": 67,
+    "anchor_links": 11,
+    "shell_fences": 20,
+    "external_links_skipped": 6,
+    "failures": []
+  }
+}

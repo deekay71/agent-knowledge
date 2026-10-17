@@ -44,10 +44,15 @@ CLI mutations use an exclusive per-checkout lock; do not manually delete a lock 
 is active. After an interrupted process, inspect the recorded PID and checkout before removing
 a stale lock. Locks coordinate CLI writers, not editors or arbitrary Git processes.
 Use one integrator to merge sequentially. When index/log conflict, preserve every log entry from
-both branches, deduplicate by exact event only, regenerate index from merged pages, re-review
-claims, stage resolved files, and run `lint --base FIRST_PARENT --merge-parent SECOND_PARENT`. This preserves the
+both branches, remove only shared history already represented (retain repeated events), re-review
+claims, and stage every resolved conflict path before running index (which rejects unmerged entries).
+Regenerate index/log/vault, stage their final output, and run
+`lint --base FIRST_PARENT --merge-parent SECOND_PARENT`. This preserves the
 first-parent byte prefix and every incoming event in order, plus raw bytes from both parents.
 Lint rejects unmerged Git entries and conflict markers in synthesized pages; raw may quote them. Never choose ours/theirs for the whole log.
+Merge content on a contrib/ integration branch; fast-forward main after validation/review.
+For generated vault conflicts, preserve manual edits first and follow docs/HOOKS.md to restore a
+complete managed view before refreshing from merged canonical sources.
 Do not share one mutable index/log across concurrent agents.
 
 Optional Git and Codex lifecycle hooks are defined in docs/HOOKS.md. Git validation must inspect

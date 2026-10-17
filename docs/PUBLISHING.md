@@ -1,49 +1,47 @@
-# Publishing this repository
+# Publication record and future updates
 
-The user approved **GitHub `deekay71/agent-knowledge`, public** on 2026-10-17 UTC.
-The publication branch starts at a tested, sanitized MVP snapshot. Earlier development commits
-remain on the local `contrib/mvp` branch and are not part of the intended public push. Push only
-the selected `main` branch, never `--all` or `--mirror`. Continue future contributions from the
-published `main` lineage using fresh `contrib/...` branches/worktrees.
+[deekay71/agent-knowledge](https://github.com/deekay71/agent-knowledge) was created and pushed as
+**public**, default branch **main**, after explicit owner/name/visibility approval. GitHub API
+verification on 2026-10-17 UTC confirmed commit
+`67e8bfb22a3281092c0e4bded0a3b702b279b486`, only main on the remote, and zero Actions runs/checks.
+No CI workflow, branch protection, collaborator invitation or real-project integration was installed.
+This is a recorded publication result, not a promise that later remote state is unchanged.
 
-Local implementation, tests and commits do not publish anything. Confirm the host, owner,
-repository name and private/public visibility before creating a remote. The proposed name is
-`agent-knowledge`; it is not an authorization to select visibility. No credentials belong in chat,
-this repository, export files or command arguments.
+The public branch starts at a sanitized, tested root snapshot. Earlier development commits remain
+on the original local `contrib/mvp` branch and were not pushed; that branch is not a base for public
+updates. Its old validation captures contain machine paths. The public snapshot retains normalized
+captures and the same tested implementation tree without those earlier commits. A read-only audit
+found no recognizable credentials, private project payload or handoff context in the public snapshot;
+that audit is not a universal secret-scanning certificate. Demo histories remain reproducible through
+scripts/demo.py.
 
-Before publication, inspect tracked files and reachable commit history, run tests, history-aware
-lint and `export_vault.py --check`, then review the committed result. Keep the original handoff
-context, sandbox projects, personal notes and local caches outside this repository. Raw sources
-are included in the repository and vault; all readers can access them and Git history.
+## Updating the existing public repository
 
-The local development history contains synthetic fixtures and validation records. A read-only audit found
-no recognizable credentials or private project payload, but older test captures contain local
-workspace and temporary paths. The latest copies redact those machine paths; previous commits
-retain them. This is not a formal secret-scanning certificate. A new root snapshot for the public
-branch preserves the tested tree without publishing those earlier development commits; the local
-development branch is retained. Demonstration histories remain reproducible through scripts/demo.py.
+Start new contrib/ branches or worktrees from the accepted public main lineage. Review canonical
+changes and their generated vault together. Use history-aware lint against the actual pre-change
+baseline, applicable tests and staged hook validation; see [README](../README.md) and [HOOKS](HOOKS.md).
+A docs-only change still needs link/command checks and staged validation, not invented model tests.
 
-When the destination and visibility are approved and `gh` is authenticated as the intended owner:
+Push only the reviewed branch/commit within the user's authorized scope. Never use `--all` or
+`--mirror`: local development branches may contain history that was deliberately kept private.
+Use normal non-force pushes, inspect unexpected remote changes instead of overwriting them, and
+verify the remote SHA after publication. A local commit or an earlier approval to create the repo
+is not permission to publish every future change. Do not recreate the existing repo or change its
+visibility, auth, sharing settings or branch protections as part of an unrelated documentation edit.
 
-```sh
-gh api user --jq .login
-git status --short
-python3 -m unittest discover -s tests -v
-python3 scripts/wiki.py lint --base HEAD
-python3 scripts/export_vault.py --check
-```
+For a real consuming project, publish the accepted wiki commit first and verify it can be fetched;
+only then bump the project's gitlink. No project update follows automatically. See
+[SUBMODULES.md](SUBMODULES.md).
 
-Check that the requested new repository does not already exist before creating it. Create the
-empty remote with the approved visibility and add it as `origin`; never overwrite an existing
-remote or reuse a populated repository without reviewing it. Push the tested commit to `main`
-with a normal non-force push, set the remote default branch to `main`, and verify the remote SHA
-and visibility. The local `contrib/mvp` branch may remain the authoring branch.
+## Review scope before sharing
 
-No branch protection, collaborator invitations, paid usage, real-project submodule installation,
-automatic sync or application plugins are included in this publication step. Future project
-integration follows [SUBMODULES.md](SUBMODULES.md) after choosing a real consuming project.
+All readers of this public repo can read included raw sources and public history. Keep handoff
+context, personal notes, customer/project-private content, tokens and local caches outside it.
+Folders and exported vaults are not permission boundaries. Inspect files and reachable history;
+removing a sensitive file from the latest tree does not remove earlier copies. Preserve local work
+when preparing a separate publication snapshot; do not silently rewrite another working tree.
 
-GitHub connector access and local Git/CLI authentication are separate capabilities. If the
-connector cannot create repositories and `gh` is not authenticated, complete local preparation
-and report that blocker. The user can sign in with `gh auth login` or provide an authorized
-empty remote and a supported write path; do not extract tokens from other applications.
+GitHub connector access, browser login and local Git/CLI authentication are separate. If a later
+publish task lacks the required access, report that specific blocker. Do not extract tokens from
+other apps, put credentials in chat/command arguments, or change accounts to bypass it. The wiki
+scripts themselves perform no authentication or remote publication.

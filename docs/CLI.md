@@ -42,7 +42,7 @@ python3 scripts/wiki.py record query 'Persisted synthesis with explicit citation
 ```
 
 `record` only appends an event: it does not perform ingest, semantic review or maintenance.
-There is no standalone `ingest`, `review`, `maintain`, `search`, `update`, `rollback`, `publish`,
+wiki.py has no standalone `ingest`, `review`, `maintain`, `search`, `update`, `rollback`, `publish`,
 `init` or `install` command. Search is query. Upgrade and rollback both use pin with a full local
 commit SHA. Source ingestion/synthesis is an authoring workflow documented in POLICY.md.
 `index` generates navigation and records an index event. `lint --record` records the result even
@@ -54,7 +54,8 @@ Worktree requires a clean source, a new external destination without symlink com
 new contrib/ branch; clean main/detached sources are supported. Pin requires a clean attached
 superproject and clean initialized submodule. It rejects ignored-file overwrite collisions,
 missing/abbreviated/non-commit SHAs and leaves only the gitlink diff for manual review/commit.
-All CLI mutations use a cooperative per-checkout lock. They do not fetch, commit or push.
+All wiki.py mutations use a cooperative per-checkout lock. They do not fetch, commit or push.
+The separate exporter uses a per-output lock; demo.py deliberately creates local fixture commits.
 
 Exit status: 0 success (lint warnings do not fail); 1 lint errors; 2 usage/safety/operational error.
 No-baseline lint warns that history was not checked. Query returns at most five matching pages
