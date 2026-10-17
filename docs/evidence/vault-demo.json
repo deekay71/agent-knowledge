@@ -1,0 +1,118 @@
+{
+  "wiki_v1": "e85b0bcedd2074fea97250622438097d58f2cfed",
+  "wiki_v2": "08e600e290265689017640a509035368911db18a",
+  "A": "08e600e290265689017640a509035368911db18a",
+  "B": "e85b0bcedd2074fea97250622438097d58f2cfed",
+  "raw_v1_sha256": "5187ff91b913a7a8a392abf4b3edb91ee2038f61bba6755eca27a383bb1c40e2",
+  "open_contradiction_detected": true,
+  "rollback_tested": true,
+  "project_local_stayed_local": true,
+  "query_v1": [
+    {
+      "page": "wiki/concepts/queue.md",
+      "status": "draft",
+      "fixture": true,
+      "claims": [
+        {
+          "kind": "evidence",
+          "text": "Synthetic queue capacity is 8.",
+          "sources": [
+            "raw/fixture-v1.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/1"
+          ]
+        }
+      ],
+      "contradictions": [],
+      "warnings": [
+        "History not checked: supply a trusted --base commit"
+      ],
+      "validation": "structural-only; history and semantic truth not established"
+    },
+    {
+      "page": "wiki/lessons/versioning.md",
+      "status": "draft",
+      "fixture": true,
+      "claims": [
+        {
+          "kind": "inference",
+          "text": "Keep explicit version boundaries in answers.",
+          "sources": [
+            "raw/fixture-v1.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/1"
+          ]
+        }
+      ],
+      "contradictions": [],
+      "warnings": [
+        "History not checked: supply a trusted --base commit"
+      ],
+      "validation": "structural-only; history and semantic truth not established"
+    }
+  ],
+  "query_v2": [
+    {
+      "page": "wiki/concepts/queue.md",
+      "status": "reviewed",
+      "fixture": true,
+      "claims": [
+        {
+          "kind": "evidence",
+          "text": "Synthetic queue capacity is 16.",
+          "sources": [
+            "raw/fixture-v2.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/2"
+          ]
+        },
+        {
+          "kind": "inference",
+          "text": "Consumers may need capacity migration checks; this is an inference, not source evidence.",
+          "sources": [
+            "raw/fixture-v1.md",
+            "raw/fixture-v2.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/1",
+            "FixtureQueue/2"
+          ]
+        }
+      ],
+      "contradictions": [
+        {
+          "status": "resolved",
+          "sources": [
+            "raw/fixture-v1.md",
+            "raw/fixture-v2.md"
+          ],
+          "resolution": "Different explicit versions; preserve both claims. No assertion about cross-version migration."
+        }
+      ],
+      "warnings": [
+        "History not checked: supply a trusted --base commit"
+      ],
+      "validation": "structural-only; history and semantic truth not established"
+    }
+  ],
+  "history_lint": {
+    "errors": [],
+    "warnings": [],
+    "history_checked": true
+  },
+  "evaluation": "Scripted fixtures and real Git; no autonomous LLM evaluation",
+  "vault_snapshot_checked": true,
+  "vault_A": {
+    "files": 10,
+    "source_digest": "e33573f90be22b1973139389410351e3ec903aa0cd17b5d4aa240e0dbad85375",
+    "validation": "deterministic Markdown projection; GUI not tested"
+  },
+  "vault_B": {
+    "files": 8,
+    "source_digest": "e7bf3ff51059239238b93f3646526d1de488909ffdcb4c14f26b8b48fc555739",
+    "validation": "deterministic Markdown projection; GUI not tested"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "wiki_v1": "65568d44c568ed418650ccd695bba943d39eed77",
+  "wiki_v2": "cc989f21050bba030cc73e976c6d6c5ca4dcaf4b",
+  "A": "cc989f21050bba030cc73e976c6d6c5ca4dcaf4b",
+  "B": "65568d44c568ed418650ccd695bba943d39eed77",
+  "raw_v1_sha256": "ae754a1cd453de960f6054bc1562d6f87dee4fccfd846928701efff54d2a28d0",
+  "open_contradiction_detected": true,
+  "rollback_tested": true,
+  "project_local_stayed_local": true,
+  "query_v1": [
+    {
+      "page": "wiki/concepts/queue.md",
+      "status": "draft",
+      "fixture": true,
+      "claims": [
+        {
+          "kind": "evidence",
+          "text": "Synthetic queue capacity is 8.",
+          "sources": [
+            "raw/fixture-v1.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/1"
+          ]
+        }
+      ],
+      "contradictions": []
+    },
+    {
+      "page": "wiki/lessons/versioning.md",
+      "status": "draft",
+      "fixture": true,
+      "claims": [
+        {
+          "kind": "inference",
+          "text": "Keep explicit version boundaries in answers.",
+          "sources": [
+            "raw/fixture-v1.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/1"
+          ]
+        }
+      ],
+      "contradictions": []
+    }
+  ],
+  "query_v2": [
+    {
+      "page": "wiki/concepts/queue.md",
+      "status": "reviewed",
+      "fixture": true,
+      "claims": [
+        {
+          "kind": "evidence",
+          "text": "Synthetic queue capacity is 16.",
+          "sources": [
+            "raw/fixture-v2.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/2"
+          ]
+        },
+        {
+          "kind": "inference",
+          "text": "Consumers may need capacity migration checks; this is an inference, not source evidence.",
+          "sources": [
+            "raw/fixture-v1.md",
+            "raw/fixture-v2.md"
+          ],
+          "applies_to": [
+            "FixtureQueue/1",
+            "FixtureQueue/2"
+          ]
+        }
+      ],
+      "contradictions": [
+        {
+          "status": "resolved",
+          "sources": [
+            "raw/fixture-v1.md",
+            "raw/fixture-v2.md"
+          ],
+          "resolution": "Different explicit versions; preserve both claims. No assertion about cross-version migration."
+        }
+      ]
+    }
+  ],
+  "history_lint": {
+    "errors": [],
+    "warnings": [],
+    "history_checked": true
+  },
+  "evaluation": "Scripted fixtures and real Git; no autonomous LLM evaluation"
+}

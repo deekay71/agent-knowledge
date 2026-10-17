@@ -1,0 +1,5 @@
+#!/bin/sh
+# Validate the Git index (including GIT_INDEX_FILE for partial commits).
+set -eu
+root=$(git rev-parse --show-toplevel)
+exec python3 "$root/scripts/git_hooks.py" --root "$root" check

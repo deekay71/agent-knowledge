@@ -1,0 +1,122 @@
+{
+  "edges": [
+    {
+      "claim_kind": "evidence",
+      "from": "wiki/concepts/queue.md",
+      "kind": "claim",
+      "to": "raw/fixture-v1.md"
+    },
+    {
+      "claim_kind": "inference",
+      "from": "wiki/lessons/versioning.md",
+      "kind": "claim",
+      "to": "raw/fixture-v1.md"
+    },
+    {
+      "from": "Home.md",
+      "kind": "navigation",
+      "to": "raw/fixture-v1.md"
+    },
+    {
+      "from": "Home.md",
+      "kind": "navigation",
+      "to": "wiki/concepts/queue.md"
+    },
+    {
+      "from": "Home.md",
+      "kind": "navigation",
+      "to": "wiki/index.md"
+    },
+    {
+      "from": "Home.md",
+      "kind": "navigation",
+      "to": "wiki/lessons/versioning.md"
+    },
+    {
+      "from": "Home.md",
+      "kind": "navigation",
+      "to": "wiki/log.md"
+    },
+    {
+      "from": "wiki/concepts/queue.md",
+      "kind": "link",
+      "to": "raw/fixture-v1.md"
+    },
+    {
+      "from": "wiki/concepts/queue.md",
+      "kind": "link",
+      "to": "wiki/lessons/versioning.md"
+    },
+    {
+      "from": "wiki/concepts/queue.md",
+      "kind": "sources",
+      "to": "raw/fixture-v1.md"
+    },
+    {
+      "from": "wiki/index.md",
+      "kind": "link",
+      "to": "wiki/concepts/queue.md"
+    },
+    {
+      "from": "wiki/index.md",
+      "kind": "link",
+      "to": "wiki/lessons/versioning.md"
+    },
+    {
+      "from": "wiki/lessons/versioning.md",
+      "kind": "link",
+      "to": "wiki/concepts/queue.md"
+    },
+    {
+      "from": "wiki/lessons/versioning.md",
+      "kind": "sources",
+      "to": "raw/fixture-v1.md"
+    }
+  ],
+  "format": 1,
+  "nodes": [
+    {
+      "fixture": true,
+      "id": "raw/fixture-v1.md",
+      "kind": "source",
+      "status": null,
+      "title": "fixture-v1"
+    },
+    {
+      "fixture": true,
+      "id": "wiki/concepts/queue.md",
+      "kind": "wiki",
+      "status": "draft",
+      "title": "Fixture queue capacity"
+    },
+    {
+      "fixture": false,
+      "id": "wiki/index.md",
+      "kind": "navigation",
+      "status": null,
+      "title": "index"
+    },
+    {
+      "fixture": true,
+      "id": "wiki/lessons/versioning.md",
+      "kind": "wiki",
+      "status": "draft",
+      "title": "Fixture version lesson"
+    },
+    {
+      "fixture": false,
+      "id": "wiki/log.md",
+      "kind": "navigation",
+      "status": null,
+      "title": "log"
+    },
+    {
+      "fixture": false,
+      "id": "Home.md",
+      "kind": "navigation",
+      "status": null,
+      "title": "Agent Knowledge"
+    }
+  ],
+  "source_digest": "4f57f85415e52a56b2fec309b38dfc259577a90dfaae1da9c17b0f1f0f58d106"
+}

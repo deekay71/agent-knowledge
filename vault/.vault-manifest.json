@@ -1,0 +1,21 @@
+{
+  "files": {
+    "Home.md": "b10333aff970e1e2b14f1cd6ad978be0223fcb88224fe8b0efd99480eadc6872",
+    "graph.json": "e8f6b3a8b080d62df55cad971f6c012a30e6a20cb835b3830fbde66bb38b5981",
+    "raw/fixture-v1.md": "cff6987ff0c6b746b99da9aa30e408b23ab3fce260aa359c662a678cb059ccdf",
+    "wiki/concepts/queue.md": "56b2c1634f09b8525ff2ca817da583368e05ef9b323168bac24c832dddc9965f",
+    "wiki/index.md": "32a5fe21c1f18d6ddee1cab1a3e6671fb19dd1976884d85b14887f4425b6ddb1",
+    "wiki/lessons/versioning.md": "cc6ef16655cf2097223d70698fc1fcf4e998a34bc835d054172d623c490d4edf",
+    "wiki/log.md": "ff3cda211cbdcd83ca65d512fa0d4c9b420072fc9302fb21722a076a8047797e"
+  },
+  "format": 1,
+  "generator": "agent-knowledge/export_vault",
+  "inputs": {
+    "raw/fixture-v1.md": "ae754a1cd453de960f6054bc1562d6f87dee4fccfd846928701efff54d2a28d0",
+    "wiki/concepts/queue.md": "f12686d8f290b9651a18d24f234436296ef924b305130bdee06d26265dc378d3",
+    "wiki/index.md": "2579c3c0ee403bebf29a196aefd8f93d2676ea93a5afe31757b9e37d9d2e4284",
+    "wiki/lessons/versioning.md": "2b8d904c58e891f58bdbf1e17ec21ea76a13722b80f9d1777e8f7a744491efd8",
+    "wiki/log.md": "0602e6627a4f8148b847fc6e30762a66d5b27450ab8cd262df991fff41b45964"
+  },
+  "source_digest": "4f57f85415e52a56b2fec309b38dfc259577a90dfaae1da9c17b0f1f0f58d106"
+}

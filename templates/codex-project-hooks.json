@@ -1,0 +1,40 @@
+{
+  "description": "Read-only LLM Wiki workflow hints and one bounded end-of-turn lint follow-up. Review/trust in Codex before use.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/knowledge/shared/scripts/agent_hooks.py\"",
+            "timeout": 15,
+            "additionalContextLimit": 1500
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/knowledge/shared/scripts/agent_hooks.py\"",
+            "timeout": 15,
+            "additionalContextLimit": 1500
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/knowledge/shared/scripts/agent_hooks.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

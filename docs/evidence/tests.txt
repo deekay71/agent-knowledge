@@ -1,0 +1,34 @@
+test_adapter_single_policy (test_wiki.WikiTests.test_adapter_single_policy) ... ok
+test_bad_contradiction_shape (test_wiki.WikiTests.test_bad_contradiction_shape) ... ok
+test_broken_links (test_wiki.WikiTests.test_broken_links) ... ok
+test_claim_source_mismatch (test_wiki.WikiTests.test_claim_source_mismatch) ... ok
+test_concurrent_worktree_logs (test_wiki.WikiTests.test_concurrent_worktree_logs) ... ok
+test_contradiction_and_version_query (test_wiki.WikiTests.test_contradiction_and_version_query) ... ok
+test_deleted_source (test_wiki.WikiTests.test_deleted_source) ... ok
+test_detached_guard (test_wiki.WikiTests.test_detached_guard) ... ok
+test_dirty_guard_keeps_changes (test_wiki.WikiTests.test_dirty_guard_keeps_changes) ... ok
+test_evidence_wrong_version (test_wiki.WikiTests.test_evidence_wrong_version) ... ok
+test_immutable_raw (test_wiki.WikiTests.test_immutable_raw) ... ok
+test_index_drift (test_wiki.WikiTests.test_index_drift) ... ok
+test_log_rewrite (test_wiki.WikiTests.test_log_rewrite) ... ok
+test_log_trailing_bytes_preserved (test_wiki.WikiTests.test_log_trailing_bytes_preserved) ... ok
+test_main_guard (test_wiki.WikiTests.test_main_guard) ... ok
+test_malformed_metadata (test_wiki.WikiTests.test_malformed_metadata) ... ok
+test_missing_baseline_rejected (test_wiki.WikiTests.test_missing_baseline_rejected) ... ok
+test_missing_metadata (test_wiki.WikiTests.test_missing_metadata) ... ok
+test_orphan_page (test_wiki.WikiTests.test_orphan_page) ... ok
+test_private_source_rejected (test_wiki.WikiTests.test_private_source_rejected) ... ok
+test_project_scope_rejected (test_wiki.WikiTests.test_project_scope_rejected) ... ok
+test_query_read_only (test_wiki.WikiTests.test_query_read_only) ... ok
+test_real_git_demo_and_pin_failures (test_wiki.WikiTests.test_real_git_demo_and_pin_failures) ... ok
+test_recorded_query_and_lint (test_wiki.WikiTests.test_recorded_query_and_lint) ... ok
+test_stale_warning (test_wiki.WikiTests.test_stale_warning) ... ok
+test_symlink_rejected (test_wiki.WikiTests.test_symlink_rejected) ... ok
+test_unreferenced_private_source (test_wiki.WikiTests.test_unreferenced_private_source) ... ok
+test_valid_baseline (test_wiki.WikiTests.test_valid_baseline) ... ok
+test_verified_requires_evidence (test_wiki.WikiTests.test_verified_requires_evidence) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 5.207s
+
+OK

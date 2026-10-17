@@ -1,0 +1,11 @@
+usage: export_vault.py [-h] [--root ROOT] [--output OUTPUT] [--check |
+                       --refresh]
+
+Export a portable Markdown vault without modifying canonical knowledge.
+
+options:
+  -h, --help       show this help message and exit
+  --root ROOT
+  --output OUTPUT  default: ROOT/vault; otherwise a separate directory
+  --check          read-only drift check
+  --refresh        refresh an unchanged managed vault

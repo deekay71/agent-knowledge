@@ -1,0 +1,139 @@
+{
+  "commands": [
+    {
+      "command": [
+        "lint",
+        "--base",
+        "864adf0b4e52fa4e479bb3beae2987c8913cc09f"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "{\n  \"errors\": [],\n  \"warnings\": [],\n  \"history_checked\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lint",
+        "--base",
+        "864adf0b4e52fa4e479bb3beae2987c8913cc09f",
+        "--merge-parent",
+        "864adf0b4e52fa4e479bb3beae2987c8913cc09f",
+        "--record"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "{\n  \"errors\": [],\n  \"warnings\": [],\n  \"history_checked\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "query",
+        "queue",
+        "--version",
+        "FixtureQueue/1"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "[\n  {\n    \"page\": \"wiki/concepts/queue.md\",\n    \"status\": \"draft\",\n    \"fixture\": true,\n    \"claims\": [\n      {\n        \"kind\": \"evidence\",\n        \"text\": \"Synthetic queue capacity is 8.\",\n        \"sources\": [\n          \"raw/fixture-v1.md\"\n        ],\n        \"applies_to\": [\n          \"FixtureQueue/1\"\n        ]\n      }\n    ],\n    \"contradictions\": [],\n    \"warnings\": [\n      \"History not checked: supply a trusted --base commit\"\n    ],\n    \"validation\": \"structural-only; history and semantic truth not established\"\n  },\n  {\n    \"page\": \"wiki/lessons/versioning.md\",\n    \"status\": \"draft\",\n    \"fixture\": true,\n    \"claims\": [\n      {\n        \"kind\": \"inference\",\n        \"text\": \"Keep explicit version boundaries in answers.\",\n        \"sources\": [\n          \"raw/fixture-v1.md\"\n        ],\n        \"applies_to\": [\n          \"FixtureQueue/1\"\n        ]\n      }\n    ],\n    \"contradictions\": [],\n    \"warnings\": [\n      \"History not checked: supply a trusted --base commit\"\n    ],\n    \"validation\": \"structural-only; history and semantic truth not established\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "query",
+        "queue",
+        "--version",
+        "FixtureQueue/1",
+        "--record"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "[\n  {\n    \"page\": \"wiki/concepts/queue.md\",\n    \"status\": \"draft\",\n    \"fixture\": true,\n    \"claims\": [\n      {\n        \"kind\": \"evidence\",\n        \"text\": \"Synthetic queue capacity is 8.\",\n        \"sources\": [\n          \"raw/fixture-v1.md\"\n        ],\n        \"applies_to\": [\n          \"FixtureQueue/1\"\n        ]\n      }\n    ],\n    \"contradictions\": [],\n    \"warnings\": [\n      \"History not checked: supply a trusted --base commit\"\n    ],\n    \"validation\": \"structural-only; history and semantic truth not established\"\n  },\n  {\n    \"page\": \"wiki/lessons/versioning.md\",\n    \"status\": \"draft\",\n    \"fixture\": true,\n    \"claims\": [\n      {\n        \"kind\": \"inference\",\n        \"text\": \"Keep explicit version boundaries in answers.\",\n        \"sources\": [\n          \"raw/fixture-v1.md\"\n        ],\n        \"applies_to\": [\n          \"FixtureQueue/1\"\n        ]\n      }\n    ],\n    \"contradictions\": [],\n    \"warnings\": [\n      \"History not checked: supply a trusted --base commit\"\n    ],\n    \"validation\": \"structural-only; history and semantic truth not established\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "index"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "record",
+        "ingest",
+        "CLI smoke fixture only"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "record",
+        "review",
+        "CLI smoke fixture only"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "record",
+        "maintain",
+        "CLI smoke fixture only"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "record",
+        "query",
+        "CLI smoke fixture only"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "worktree",
+        "<temporary-path>",
+        "contrib/new"
+      ],
+      "target": "source",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pin",
+        "593330730b8c421e181ac69e6b1eeb6d5e17fd8b"
+      ],
+      "target": "A",
+      "returncode": 0,
+      "stdout": "{\n  \"selected\": \"593330730b8c421e181ac69e6b1eeb6d5e17fd8b\",\n  \"next\": \"Review git diff, then commit project gitlink; no commit or fetch performed.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pin",
+        "32923d4b49668bbcb4b903ea306224cea204ff27"
+      ],
+      "target": "A",
+      "returncode": 0,
+      "stdout": "{\n  \"selected\": \"32923d4b49668bbcb4b903ea306224cea204ff27\",\n  \"next\": \"Review git diff, then commit project gitlink; no commit or fetch performed.\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "passed": 12
+}

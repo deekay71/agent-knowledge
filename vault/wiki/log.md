@@ -1,0 +1,21 @@
+---
+generated: true
+canonical_path: "wiki/log.md"
+source_sha256: "0602e6627a4f8148b847fc6e30762a66d5b27450ab8cd262df991fff41b45964"
+note_type: "navigation"
+---
+
+> Generated reading view. Edit the canonical repository file, then export again.
+
+# Wiki log
+
+```text
+# Wiki log
+- {"at": "2026-10-15T07:50:08.142773+00:00", "operation": "ingest", "detail": "Synthetic v1: source and existing concept synthesis updated; review pending"}
+- {"at": "2026-10-15T07:55:01.054168+00:00", "operation": "maintain", "detail": "MVP implemented; 29 automated tests and real Git demo passed; independent review fixes applied. No production verification or autonomous LLM evaluation."}
+- {"at": "2026-10-15T07:55:01.149571+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": false}}
+- {"at": "2026-10-15T08:11:29.125631+00:00", "operation": "maintain", "detail": "Deep review from 9134a25: source/query/path, ignored pin collision, log/schema, Unicode and concurrency fixes; 72 automated tests and 12 CLI smoke invocations passed. No autonomous LLM evaluation or publication."}
+- {"at": "2026-10-15T08:11:29.271084+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
+- {"at": "2026-10-16T10:22:55.368620+00:00", "operation": "maintain", "detail": "Implemented repository-local staged Git hooks and read-only Codex lifecycle workflow hooks. Handler/integration tests; native Codex trust remains pending. No automatic shared ingest or publication."}
+- {"at": "2026-10-16T10:22:55.486915+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
+```

@@ -1,0 +1,1 @@
+Parsed YAML frontmatter in 6 Markdown notes using Ruby Psych; no GUI evaluation.

@@ -1,0 +1,74 @@
+$ python3 scripts/wiki.py --help
+usage: wiki.py [-h] [--root ROOT] {lint,index,query,record,worktree,pin} ...
+
+Local Markdown knowledge tooling. No network, model calls, or dependencies.
+
+positional arguments:
+  {lint,index,query,record,worktree,pin}
+
+options:
+  -h, --help            show this help message and exit
+  --root ROOT
+
+$ python3 scripts/wiki.py lint --help
+usage: wiki.py lint [-h] [--base BASE] [--merge-parent MERGE_PARENT]
+                    [--record]
+
+options:
+  -h, --help            show this help message and exit
+  --base BASE
+  --merge-parent MERGE_PARENT
+  --record
+
+$ python3 scripts/wiki.py index --help
+usage: wiki.py index [-h]
+
+options:
+  -h, --help  show this help message and exit
+
+$ python3 scripts/wiki.py query --help
+usage: wiki.py query [-h] --version VERSION [--record] term
+
+positional arguments:
+  term
+
+options:
+  -h, --help         show this help message and exit
+  --version VERSION
+  --record
+
+$ python3 scripts/wiki.py record --help
+usage: wiki.py record [-h] {ingest,review,maintain,query} detail
+
+positional arguments:
+  {ingest,review,maintain,query}
+  detail
+
+options:
+  -h, --help            show this help message and exit
+
+$ python3 scripts/wiki.py worktree --help
+usage: wiki.py worktree [-h] path branch
+
+positional arguments:
+  path
+  branch
+
+options:
+  -h, --help  show this help message and exit
+
+$ python3 scripts/wiki.py pin --help
+usage: wiki.py pin [-h] sha
+
+positional arguments:
+  sha
+
+options:
+  -h, --help  show this help message and exit
+
+$ python3 scripts/demo.py --help
+usage: demo.py [-h] --output OUTPUT
+
+options:
+  -h, --help       show this help message and exit
+  --output OUTPUT
