@@ -4,7 +4,7 @@
 
 Repo public: [deekay71/agent-knowledge](https://github.com/deekay71/agent-knowledge). MVP dùng Markdown + Git + thư viện chuẩn Python, chưa có vector DB, daemon, MCP server hoặc API LLM. **Toàn bộ kiến thức mẫu hiện tại là fixture tổng hợp, không phải hướng dẫn Unity/production đã xác minh.**
 
-Đọc theo nhu cầu: [bắt đầu](#bat-dau) · [cơ chế](#co-che) · [đọc/ghi](#doc-ghi) · [CLI](#cli) · [demo đầy đủ](#demo) · [nhiều project](#nhieu-project) · [hooks](#hooks) · [Obsidian](#obsidian) · [xử lý lỗi](#xu-ly-loi) · [tài liệu](#tai-lieu).
+Đọc theo nhu cầu: [bắt đầu](#bat-dau) · [graph local](docs/VIEWER.md) · [cơ chế](#co-che) · [đọc/ghi](#doc-ghi) · [CLI](#cli) · [demo đầy đủ](#demo) · [nhiều project](#nhieu-project) · [hooks](#hooks) · [Obsidian](#obsidian) · [xử lý lỗi](#xu-ly-loi) · [tài liệu](#tai-lieu).
 
 <a id="bat-dau"></a>
 ## 1. Bắt đầu
@@ -23,6 +23,15 @@ python3 scripts/export_vault.py --check
 
 Query trả JSON có trang, claim, nguồn và cảnh báo; ví dụ v1 dẫn tới `raw/fixture-v1.md`, capacity 8 của fixture. Chưa biết phiên bản thì đọc context project trước, không tự đoán. Các lệnh kiểm tra/query trên không ghi kiến thức. Muốn xem bằng giao diện, mở thư mục `vault/` theo [mục Obsidian](#obsidian).
 
+**Graph ngay trong trình duyệt:** trong checkout có viewer, chạy lệnh sau rồi mở `http://127.0.0.1:8765/`; Ctrl+C để dừng. Không cần npm, Obsidian hoặc API key.
+
+```sh
+python3 scripts/viewer.py --check
+python3 scripts/viewer.py
+```
+
+Viewer chỉ đọc canonical, có tìm title/ID, lọc loại/topic, reader và provenance của cạnh; dùng **Tải lại dữ liệu** để nạp lại. Starter có 4 node/9 cạnh, khác portable vault có 6 note/14 cạnh. Xem [hướng dẫn viewer](docs/VIEWER.md) để chạy demo lớn riêng, hiểu biên an toàn và giới hạn. Viewer đã được triển khai local; không tự khởi động, publish hoặc ghi ngược vào wiki.
+
 <a id="co-che"></a>
 ## 2. Kiến trúc và dòng dữ liệu
 
@@ -33,6 +42,7 @@ flowchart LR
     A --> W["wiki/: concept, lesson, claim có nguồn"]
     W --> Q["query: lọc phiên bản và trích dẫn"]
     W --> V["export: vault/ để đọc và xem graph"]
+    W --> L["viewer local: graph + reader + provenance"]
     A --> G["index + log + lint + review"]
     G --> C["Commit wiki được chấp nhận"]
     C --> P["Project chủ động cập nhật gitlink"]
@@ -45,8 +55,9 @@ flowchart LR
 | `wiki/index.md` | Điều hướng sinh từ metadata; chạy `index` để tái tạo. |
 | `wiki/log.md` | Nhật ký append-only đối với baseline tin cậy; lưu sự kiện có chủ đích, không lưu toàn bộ chat. |
 | `vault/` | Bản đọc được sinh ra, có YAML/Markdown/graph và hash; không phải nguồn tri thức thứ hai. |
+| `viewer/` | Giao diện graph local và thư viện JavaScript đã vendored; đọc canonical qua `scripts/viewer.py`. |
 | `docs/`, `templates/` | Policy chung, schema, ADR và biểu mẫu ingest/query/lint/contribute. |
-| `scripts/`, `tests/` | CLI, handler hook, demo và kiểm tra tự động; chỉ dùng thư viện chuẩn Python. |
+| `scripts/`, `tests/` | CLI, handler hook, demo và unit tests Python dùng thư viện chuẩn; browser tests có dependencies riêng. |
 | `AGENTS.md`, `CLAUDE.md` | Adapter mỏng cùng trỏ tới [một policy](docs/POLICY.md). |
 
 **Phần LLM nằm ở bước biên soạn/review của agent do người dùng chọn.** Script không gọi model, không tự đọc URL rồi viết bài hoặc tự học từ chat. `query` tìm nội dung đã biên soạn, không tạo câu trả lời mới bằng LLM. Hiện không cần cache tìm kiếm; cache tương lai phải tái tạo được và để trong `.cache/` đã ignore.
@@ -127,6 +138,8 @@ Chạy từ root repo. Với `wiki.py`/`git_hooks.py`, đặt `--root PATH` **tr
 | `wiki.py --root PROJECT pin FULL_SHA` | Checkout `knowledge/shared` tới commit đã có local; để gitlink diff cho review/commit. |
 | `git_hooks.py {install,status,check,uninstall}` | Cài, xem, kiểm tra staged hoặc gỡ Git hooks tại clone wiki; `check --merge` dành cho pre-merge hook. |
 | `export_vault.py [--root ROOT] [--output PATH] [--check \| --refresh]` | Tạo bản đọc mới, kiểm tra drift hoặc refresh bản được quản lý. |
+| `viewer.py [--root ROOT] [--port PORT] [--check]` | Graph chỉ đọc tại 127.0.0.1; `--check` kiểm tra snapshot không mở HTTP. |
+| `viewer_demo.py --output NEW_DIRECTORY [--topics N] [--date YYYY-MM-DD]` | Fixture synthetic riêng để thử graph; không tạo Git repo/commit. |
 | `demo.py --output NEW_DIRECTORY` | Demo synthetic bằng Git/submodule thật, hoàn toàn local. |
 
 Tên script trong bảng có prefix `python3 scripts/` khi chạy. Ví dụ xem help:
@@ -136,6 +149,8 @@ python3 scripts/wiki.py --help
 python3 scripts/wiki.py query --help
 python3 scripts/git_hooks.py --help
 python3 scripts/export_vault.py --help
+python3 scripts/viewer.py --help
+python3 scripts/viewer_demo.py --help
 python3 scripts/demo.py --help
 ```
 
@@ -277,6 +292,8 @@ Mốc triển khai **2026-10-17 UTC: 154 tests local pass**, gồm schema/histor
 
 Đợt hoàn thiện README chạy thêm **11 kịch bản smoke** với Git thật để kiểm tra lệnh mẫu, merge/vault và submodule; xem [báo cáo tài liệu](docs/README-VALIDATION-20261017.md). Không tính các lần gọi lệnh thành unit tests và không chạy lại toàn bộ suite trong đợt chỉ sửa docs này.
 
+Đợt viewer **2026-10-18 UTC** chạy lại toàn bộ suite: **197 tests Python pass**, cùng **10 nhóm browser integration tests** trên Chrome thật. Có ảnh giao diện và benchmark synthetic 301 node/1.403 cạnh trong [báo cáo viewer](docs/VIEWER-VALIDATION-20261018.md); không phải test LLM hoặc kết quả CI.
+
 Các phần chưa triển khai/kiểm chứng: tự ingest bằng model, tìm kiếm vector, Claude hooks, native agent activation end-to-end, GUI Obsidian, CI/branch protection và project production đầu tiên. MVP cung cấp cơ chế local và workflow có thể kiểm tra, không tự kích hoạt tất cả các phần đó.
 
 <a id="tai-lieu"></a>
@@ -290,6 +307,7 @@ Các phần chưa triển khai/kiểm chứng: tự ingest bằng model, tìm ki
 | Project integration, đóng góp, rollback | [SUBMODULES](docs/SUBMODULES.md), [project adapter](templates/project-adapter.md) |
 | Cài/trust/tắt hooks | [HOOKS](docs/HOOKS.md), [consumer hook template](templates/codex-project-hooks.json) |
 | Xem và xuất vault | [VIEWING](docs/VIEWING.md), [Home](vault/Home.md) |
+| Graph local, reader và demo nhiều topic | [VIEWER](docs/VIEWER.md), [ADR 003](docs/ADR-003.md) |
 | Biểu mẫu authoring/review | [ingest](templates/ingest.md), [query](templates/query.md), [lint](templates/lint.md), [contribute](templates/contribute.md), [page](templates/page.md) |
 | Kết quả test theo giai đoạn | [MVP](docs/VALIDATION.md), [review](docs/REVIEW-20261015.md), [hooks](docs/HOOKS-VALIDATION-20261016.md), [vault](docs/VIEWING-VALIDATION-20261017.md) |
 | Publication và lịch sử local/public | [PUBLISHING](docs/PUBLISHING.md) |

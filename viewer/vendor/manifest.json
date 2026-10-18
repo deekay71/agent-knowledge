@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "source": "Official npm registry; exact prebuilt distributions copied without running package scripts",
+  "packages": [
+    {
+      "name": "cytoscape",
+      "version": "3.34.4",
+      "registry_tarball": "https://registry.npmjs.org/cytoscape/-/cytoscape-3.34.4.tgz",
+      "tarball_integrity": "sha512-msY99tMY8iWTg+sIPGfSqDcPNOt4xcj+v/K/7qUFaCUxxlqnMkUYLBjRUzn9W5CU/R2hrmtJa5+UtovrEM2ctg==",
+      "package_member": "dist/cytoscape.min.js",
+      "file": "cytoscape.min.js",
+      "sha256": "081591ab735b2b6a3b31a3c60f8f3a3e2fee8c92939e0c7820ad1208571b6cd8",
+      "licenses": [
+        "cytoscape-LICENSE"
+      ]
+    },
+    {
+      "name": "markdown-it",
+      "version": "15.0.3",
+      "registry_tarball": "https://registry.npmjs.org/markdown-it/-/markdown-it-15.0.3.tgz",
+      "tarball_integrity": "sha512-+Az7Ojz3iRGu8KYMvJ6xVhvrxP3eE+vEtJX75Ow88XBpcQNV/0lGX5ZynIIBftREo4DC2jsveAMDaeltmm8QvQ==",
+      "package_member": "dist/browser/markdown-it.umd.min.js",
+      "file": "markdown-it.min.js",
+      "sha256": "391f2aa638e75e6c7859d0a5c5650ef0956722a45998f17e05b83bc655778e1e",
+      "licenses": [
+        "markdown-it-LICENSE"
+      ]
+    },
+    {
+      "name": "dompurify",
+      "version": "3.4.17",
+      "registry_tarball": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.17.tgz",
+      "tarball_integrity": "sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==",
+      "package_member": "dist/purify.min.js",
+      "file": "purify.min.js",
+      "sha256": "cd37898f9782adf54820c413191b5691803f0f137c799d6edcfd38523b4c2c31",
+      "licenses": [
+        "dompurify-LICENSE",
+        "dompurify-LICENSE-MPL"
+      ]
+    }
+  ]
+}

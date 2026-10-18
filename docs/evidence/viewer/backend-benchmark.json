@@ -1,0 +1,60 @@
+{
+  "date_utc": "2026-10-18T03:46:24.049813+00:00",
+  "python": "3.14.8",
+  "os": "Darwin 25.2.0",
+  "machine": "arm64",
+  "method": "5 sequential in-process builds per dataset; warm filesystem cache, not cold-start or throughput SLA",
+  "results": {
+    "starter": {
+      "nodes": 4,
+      "edges": 9,
+      "json_bytes": 5306,
+      "build_ms": [
+        2.673,
+        0.557,
+        0.491,
+        0.514,
+        0.619
+      ],
+      "median_ms": 0.557,
+      "min_ms": 0.491,
+      "max_ms": 2.673,
+      "synthetic": true,
+      "includes": "confined double read, schema/index validation, explicit edge build and local revision lookup; excludes browser/layout/network and demo generation"
+    },
+    "synthetic_8_topics": {
+      "nodes": 49,
+      "edges": 227,
+      "json_bytes": 132666,
+      "build_ms": [
+        11.523,
+        5.142,
+        4.869,
+        5.063,
+        4.894
+      ],
+      "median_ms": 5.063,
+      "min_ms": 4.869,
+      "max_ms": 11.523,
+      "synthetic": true,
+      "includes": "confined double read, schema/index validation, explicit edge build and local revision lookup; excludes browser/layout/network and demo generation"
+    },
+    "synthetic_50_topics": {
+      "nodes": 301,
+      "edges": 1403,
+      "json_bytes": 819734,
+      "build_ms": [
+        73.441,
+        30.799,
+        30.168,
+        30.035,
+        30.297
+      ],
+      "median_ms": 30.297,
+      "min_ms": 30.035,
+      "max_ms": 73.441,
+      "synthetic": true,
+      "includes": "confined double read, schema/index validation, explicit edge build and local revision lookup; excludes browser/layout/network and demo generation"
+    }
+  }
+}

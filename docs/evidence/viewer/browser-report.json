@@ -1,0 +1,173 @@
+{
+  "suite": "Real browser integration; actual temporary-file data and loopback API, no response mocks",
+  "started_at": "2026-10-18T03:49:40.248Z",
+  "environment": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "node": "v26.11.1",
+    "cpu": "Apple M4",
+    "logical_cpus": 10,
+    "memory_gib": 16,
+    "browser": "155.0.8059.80"
+  },
+  "metric_notes": "graph_ready_ms is navigation-to-ready in the browser; layout_ms uses Cytoscape layout events; action_ms includes Playwright dispatch/wait overhead. Single-run observations, not production capacity claims.",
+  "results": [
+    {
+      "name": "canonical snapshot renders only its four nodes and nine declared edges",
+      "status": "passed",
+      "duration_ms": 527.3057079999999,
+      "evidence": {
+        "nodes": 4,
+        "edges": 9,
+        "automatic_refresh_observed": false
+      }
+    },
+    {
+      "name": "title and path search, keyboard focus, list selection and link directions",
+      "status": "passed",
+      "duration_ms": 169.51358400000004,
+      "evidence": {
+        "outgoing": 4,
+        "backlinks": 2
+      }
+    },
+    {
+      "name": "real canvas node click, neighbor highlight, zoom, pan, drag, fit and reset",
+      "status": "passed",
+      "duration_ms": 639.998417,
+      "evidence": {
+        "canvas_node_clicked": true,
+        "node_dragged": true,
+        "background_panned": true
+      }
+    },
+    {
+      "name": "real canvas edge click opens declared provenance",
+      "status": "passed",
+      "duration_ms": 64.73341700000037,
+      "evidence": {
+        "kind": "claim",
+        "provenance": {
+          "file": "wiki/concepts/queue.md",
+          "section": "metadata.claims[0].sources"
+        }
+      }
+    },
+    {
+      "name": "demo is 49 real synthetic nodes; type AND tag filters and select-all work",
+      "status": "passed",
+      "duration_ms": 1423.323125,
+      "evidence": {
+        "nodes": 49,
+        "edges": 227,
+        "concept_and_topic": 3,
+        "all_types_one_topic": 6
+      }
+    },
+    {
+      "name": "actual untrusted source HTML/scripts/images stay inert; external links isolate origin",
+      "status": "passed",
+      "duration_ms": 119.98750000000018,
+      "evidence": {
+        "actual_fixture_files": true,
+        "html_executed": false,
+        "images_loaded": false,
+        "external_link_policy": "noopener noreferrer; no-referrer"
+      }
+    },
+    {
+      "name": "manual refresh reads changed files; invalid snapshot visibly clears stale data and recovers",
+      "status": "passed",
+      "duration_ms": 1128.7598750000006,
+      "evidence": {
+        "automatic_refresh_observed": false,
+        "invalid_data_action": "clear graph and show error",
+        "recovered": true
+      }
+    },
+    {
+      "name": "small screen remains usable without horizontal document overflow",
+      "status": "passed",
+      "duration_ms": 130.60758299999998,
+      "evidence": {
+        "viewport": "390x844",
+        "horizontal_document_overflow": false
+      }
+    },
+    {
+      "name": "modest benchmark renders 301 nodes/1403 edges with measured search/filter response",
+      "status": "passed",
+      "duration_ms": 333.07204100000035,
+      "evidence": {
+        "nodes": 301,
+        "edges": 1403,
+        "metrics": {
+          "graph_ready_ms": 1138.5,
+          "layout_ms": 856.1000001430511,
+          "api_ms": 45.09999990463257,
+          "search_action_ms": 14.638082999999824,
+          "filter_action_ms": 40.411040999999386
+        }
+      }
+    },
+    {
+      "name": "all browser contexts make no external requests, uncaught page errors or CSP violations",
+      "status": "passed",
+      "duration_ms": 1.506916000000274,
+      "evidence": {
+        "contexts": 4,
+        "external_requests": 0,
+        "uncaught_page_errors": 0,
+        "csp_violations": 0
+      }
+    }
+  ],
+  "metrics": {
+    "canonical": {
+      "graph_ready_ms": 183.70000004768372,
+      "layout_ms": 5.900000095367432,
+      "api_ms": 15.899999856948853
+    },
+    "demo_49_nodes": {
+      "graph_ready_ms": 173.29999995231628,
+      "layout_ms": 39.09999990463257,
+      "api_ms": 25.800000190734863,
+      "filter_action_ms": 34.009500000000116
+    },
+    "actual_malicious_fixture": {
+      "graph_ready_ms": 115.29999995231628,
+      "layout_ms": 5.799999952316284,
+      "api_ms": 7.599999904632568
+    },
+    "benchmark_301_nodes": {
+      "graph_ready_ms": 1138.5,
+      "layout_ms": 856.1000001430511,
+      "api_ms": 45.09999990463257,
+      "search_action_ms": 14.638082999999824,
+      "filter_action_ms": 40.411040999999386
+    }
+  },
+  "screenshots": [
+    "canonical.png",
+    "demo-49.png",
+    "demo-topic-focus.png",
+    "demo-comparison-detail.png",
+    "untrusted-note.png",
+    "invalid-snapshot.png",
+    "mobile-390.png",
+    "benchmark-301.png"
+  ],
+  "unexpected_requests": [],
+  "page_errors": [],
+  "csp_violations": [],
+  "passed": 10,
+  "failed": 0,
+  "finished_at": "2026-10-18T03:49:48.100Z",
+  "screenshots_retained_in_repository": [
+    "canonical.png",
+    "demo-49.png",
+    "demo-topic-focus.png",
+    "demo-comparison-detail.png"
+  ],
+  "artifact_note": "Screenshot names identify files produced by the test run. Four selected screenshots are retained beside this report; other screenshots remain disposable local test outputs."
+}

@@ -1,4 +1,4 @@
-# CLI, skill and trigger inventory — updated 2026-10-17
+# CLI, skill and trigger inventory — updated 2026-10-18
 
 Hook additions: `python3 scripts/git_hooks.py [--root ROOT] {check,install,status,uninstall}` (`check` also supports `--merge` for the pre-merge hook);
 `python3 scripts/agent_hooks.py` receives lifecycle JSON on stdin. See [HOOKS.md](HOOKS.md).
@@ -8,6 +8,13 @@ Portable reading view: `python3 scripts/export_vault.py [--root ROOT] [--output 
 Initial export requires a new destination (default `ROOT/vault`). Check is read-only; refresh
 updates only an unchanged managed export. See [viewing guide](VIEWING.md). When a vault is
 tracked, Git hooks also validate its staged projection against staged canonical inputs.
+
+Local canonical viewer: `python3 scripts/viewer.py [--root ROOT] [--port PORT] [--check]`.
+Default port 8765; bind is fixed to `127.0.0.1`. Port 0 selects an available port; use the printed
+URL. `--check` prints a validated snapshot summary without starting HTTP or exporting files.
+There is no `--export` or host override. It reads canonical raw/wiki (excluding wiki/log.md),
+not the generated vault. See [viewer guide](VIEWER.md) for filters, provenance and resource limits.
+Its help and starter `--check` have been run; browser/security/performance validation is separate.
 
 This inventory is derived from actual argparse help and subprocess smoke tests, not proposed commands.
 See [captured help](evidence/review-help.txt), [smoke results](evidence/review-smoke.json) and
@@ -64,6 +71,18 @@ Query first runs structural checks of this small wiki; it is not ranked/vector s
 An empty result is not proof that knowledge does not exist. No automatic inference saving occurs.
 
 ## Other executable entrypoints
+
+`python3 scripts/viewer_demo.py --output NEW_DIRECTORY [--topics N] [--date YYYY-MM-DD]`
+creates a separate synthetic canonical wiki for the viewer. Topics default to 8, range 1–200;
+the optional date defaults to today in UTC and must not be in the future. Output must be new,
+its parent must exist, and no destination path component may be a symlink. No Git initialization,
+commits, network or model calls occur. Eight topics yield 49 viewer nodes and 227 explicit typed
+edges. Example: `python3 scripts/viewer_demo.py --output ../viewer-demo --topics 8`.
+Its help has been run; generated fixture counts are not performance guarantees.
+
+Both viewer commands return 0 on success and 2 on usage/validation/operational errors.
+The HTTP viewer exits normally with Ctrl+C. It does not modify canonical files, the log, Git
+state or the portable vault. The demo generator writes only its newly created destination.
 
 `python3 scripts/demo.py --output NEW_DIRECTORY` is a separate demo CLI. Help and a full execution
 were tested. It creates real local disposable repositories/submodules and commits synthetic fixtures.
