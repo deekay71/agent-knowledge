@@ -1,7 +1,8 @@
 # Nghiệm thu viewer P2 — 2026-10-18 UTC
 
 P2 hoàn tất local trên `contrib/viewer-phases`, nối tiếp commit P1
-`302c7c66cd318c31a4121aee6f306400c04ff3ca`. P1/P2 chưa push hoặc merge main.
+`302c7c66cd318c31a4121aee6f306400c04ff3ca`. Tại mốc nghiệm thu này P1/P2 chưa push
+hoặc merge main; [bàn giao sau phê duyệt](VIEWER-RELEASE-20261018.md) ghi đợt tiếp theo.
 Nhánh public được duyệt vẫn là MVP `contrib/local-graph-viewer` tại
 `5b31849749ddde53601d3dab359112707860b50e`; xem [biên nhận MVP](evidence/viewer-p1/mvp-publication.json).
 
@@ -99,7 +100,7 @@ Chạy lại bằng [hướng dẫn browser runner](VIEWER-VALIDATION-20261018.m
 server và browser riêng. Bộ Python: `python3 -m unittest discover -s tests -v`.
 
 Chưa test Safari/Firefox/Windows, Obsidian GUI, native clipboard/background-tab behavior
-hay agent/LLM production. Không có CI được cấu hình ở mốc publish. P1/P2 mới là commit
-local; publication của hai phase cần quyết định riêng.
+hay agent/LLM production. Không có CI được cấu hình ở mốc publish. Các giới hạn này
+mô tả đúng lượt kiểm thử P2; kiểm tra bổ sung sau đó được ghi ở báo cáo bàn giao riêng.
 
 Xem [hướng dẫn và giới hạn](VIEWER.md), [ADR005](ADR-005.md), [P1](VIEWER-P1-VALIDATION-20261018.md).

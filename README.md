@@ -12,7 +12,7 @@ Repo public: [deekay71/agent-knowledge](https://github.com/deekay71/agent-knowle
 Cần Python **3.9+**, Git và shell tương thích các ví dụ POSIX bên dưới. Môi trường đã chạy test: macOS, Python **3.14.8**, Apple Git **2.50.1**; chưa xác nhận ma trận các phiên bản/Windows. Không cần `pip install`, khóa API hay tài khoản LLM để dùng CLI. Nếu commit, Git cần có danh tính tác giả hợp lệ. Codex/Claude và Obsidian là công cụ tùy chọn, cài riêng; repo không tự cài chúng.
 
 ```sh
-git clone https://github.com/deekay71/agent-knowledge.git
+git clone --branch contrib/local-graph-viewer https://github.com/deekay71/agent-knowledge.git
 cd agent-knowledge
 python3 --version
 git --version
@@ -306,7 +306,9 @@ Xem [nghiệm thu P1](docs/VIEWER-P1-VALIDATION-20261018.md) để xem browser Q
 
 P2 đạt **229 tests Python và 28 nhóm browser** trên Chrome thật, gồm timer 15 giây,
 download JSON/PNG và compare Git local. [Nghiệm thu P2](docs/VIEWER-P2-VALIDATION-20261018.md)
-có ảnh, số đo graph 1.201 node và các giới hạn kiểm thử. P1/P2 hiện giữ local, chưa push.
+có ảnh, số đo graph 1.201 node và các giới hạn kiểm thử. Nhánh phát hành viewer là
+`contrib/local-graph-viewer`, gồm MVP/P1/P2; `main` giữ nguyên bản wiki ban đầu.
+Xem [checklist bàn giao và kiểm thử bổ sung](docs/VIEWER-RELEASE-20261018.md).
 
 Các phần chưa triển khai/kiểm chứng: tự ingest bằng model, tìm kiếm vector, Claude hooks, native agent activation end-to-end, GUI Obsidian, CI/branch protection và project production đầu tiên. MVP cung cấp cơ chế local và workflow có thể kiểm tra, không tự kích hoạt tất cả các phần đó.
 

@@ -133,7 +133,8 @@ nhóm note được phép không khiến backend đọc thêm file hoặc truy c
 ## Snapshot và tính mới
 
 Mỗi `GET /api/graph` đọc lại canonical và tạo graph trong bộ nhớ. UI hiển thị revision
-Git nếu đọc được trong root, thời gian sửa file index và thời gian load snapshot theo UTC. Revision là
+Git nếu đọc được trong root, thời gian sửa file index và thời gian load snapshot. API
+ghi timestamp ISO theo UTC; giao diện định dạng theo múi giờ của trình duyệt. Revision là
 **HEAD**, không chứng minh working tree sạch hoặc toàn bộ nội dung đã commit. Thời gian
 index là mtime trên filesystem, không phải ngày kiểm chứng kiến thức. API còn có
 `source_digest` để nhận diện byte của các input đã đọc.
@@ -200,6 +201,10 @@ Không gửi nội dung ra ngoài máy hoặc sửa Git state gốc.
 Giới hạn note/cạnh/diagnostic của graph vẫn áp dụng cho từng revision. Repo lớn hơn
 có thể bị từ chối dù corpus hiện tại nhỏ. Đây là hỗ trợ Git local có giới hạn, không
 phải dịch vụ duyệt mọi history/remote hoặc cam kết xử lý mọi object store hỏng.
+Kiểm tra kích thước trước khi đọc giới hạn object được yêu cầu và response, không
+đặt trần RSS cho Git: một packed delta nhỏ có thể cần giải nén base lớn bên trong.
+Giới hạn 20 giây được kiểm tra khi đọc/chạy subprocess, không phải watchdog riêng
+cho mọi thao tác của hệ điều hành hoặc bộ cấp phát bộ nhớ.
 
 ## Xuất JSON và ảnh
 
@@ -307,5 +312,7 @@ Portable export hiện có vẫn dùng `scripts/export_vault.py`.
 Các báo cáo [MVP](VIEWER-VALIDATION-20261018.md), [P1](VIEWER-P1-VALIDATION-20261018.md)
 và [P2](VIEWER-P2-VALIDATION-20261018.md) ghi kết quả test, ảnh browser và benchmark
 của từng giai đoạn, với môi trường và giới hạn cụ thể.
+Xem [checklist phát hành](VIEWER-RELEASE-20261018.md) để biết kiểm thử hồi quy cuối,
+clipboard/tab ẩn và phạm vi publication đã được phê duyệt.
 Có tính năng hoặc chạy `--check` không tự chứng minh mọi nền tảng/nội dung đều được kiểm chứng.
 Xem thêm [ADR 003](ADR-003.md), [ADR 004](ADR-004.md), [ADR 005](ADR-005.md), [CLI](CLI.md) và [policy](POLICY.md).

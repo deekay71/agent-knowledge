@@ -17,6 +17,14 @@ scripts/demo.py.
 
 ## Updating the existing public repository
 
+The viewer release uses `contrib/local-graph-viewer`, starting from approved MVP
+`5b31849749ddde53601d3dab359112707860b50e`. On 2026-10-18 the user additionally approved
+publishing P1 `302c7c66cd318c31a4121aee6f306400c04ff3ca`, P2
+`4e439737bd3fb83ed4a594654bea1af899dbdaf2` and scoped release fixes to that same branch.
+The permitted operation is a normal non-force push; main must remain unchanged. This
+does not authorize a new phase, branch-protection changes or updates to consuming projects.
+See the [release checklist and evidence](VIEWER-RELEASE-20261018.md).
+
 Start new contrib/ branches or worktrees from the accepted public main lineage. Review canonical
 changes and their generated vault together. Use history-aware lint against the actual pre-change
 baseline, applicable tests and staged hook validation; see [README](../README.md) and [HOOKS](HOOKS.md).

@@ -3,7 +3,8 @@
 P1 phát triển local trên `contrib/viewer-phases`, nối tiếp MVP
 `5b31849749ddde53601d3dab359112707860b50e`. MVP và README đã được publish lên nhánh
 `contrib/local-graph-viewer`; [biên nhận](evidence/viewer-p1/mvp-publication.json)
-xác nhận remote SHA, main không đổi và không có CI được cấu hình/chạy. P1 chưa push.
+xác nhận remote SHA, main không đổi và không có CI được cấu hình/chạy. Tại mốc nghiệm
+thu này P1 chưa push; [bàn giao sau phê duyệt](VIEWER-RELEASE-20261018.md) ghi đợt tiếp theo.
 
 ## Phạm vi
 

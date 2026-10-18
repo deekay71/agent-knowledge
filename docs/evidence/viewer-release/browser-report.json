@@ -1,0 +1,467 @@
+{
+  "suite": "Real browser integration; actual temporary-file data and loopback API, no response mocks",
+  "started_at": "2026-10-18T04:46:40.496Z",
+  "environment": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "node": "v26.11.1",
+    "cpu": "Apple M4",
+    "logical_cpus": 10,
+    "memory_gib": 16,
+    "browser": "155.0.8059.80"
+  },
+  "metric_notes": "graph_ready_ms is navigation-to-ready in the browser; layout_ms uses Cytoscape layout events; action_ms includes Playwright dispatch/wait overhead. Single-run observations, not production capacity claims.",
+  "results": [
+    {
+      "name": "canonical snapshot renders only its four nodes and nine declared edges",
+      "status": "passed",
+      "duration_ms": 516.0116660000001,
+      "evidence": {
+        "nodes": 4,
+        "edges": 9,
+        "automatic_refresh_observed": false
+      }
+    },
+    {
+      "name": "title and path search, keyboard focus, list selection and link directions",
+      "status": "passed",
+      "duration_ms": 221.27558399999998,
+      "evidence": {
+        "outgoing": 4,
+        "backlinks": 2
+      }
+    },
+    {
+      "name": "real canvas node click, neighbor highlight, zoom, pan, drag, fit and reset",
+      "status": "passed",
+      "duration_ms": 686.0391669999999,
+      "evidence": {
+        "canvas_node_clicked": true,
+        "node_dragged": true,
+        "background_panned": true
+      }
+    },
+    {
+      "name": "real canvas edge click opens declared provenance",
+      "status": "passed",
+      "duration_ms": 80.75424999999996,
+      "evidence": {
+        "kind": "claim",
+        "provenance": {
+          "file": "wiki/concepts/queue.md",
+          "section": "metadata.claims[0].sources"
+        }
+      }
+    },
+    {
+      "name": "demo is 49 real synthetic nodes; type AND tag filters and select-all work",
+      "status": "passed",
+      "duration_ms": 1510.9118330000001,
+      "evidence": {
+        "nodes": 49,
+        "edges": 227,
+        "concept_and_topic": 3,
+        "all_types_one_topic": 6
+      }
+    },
+    {
+      "name": "actual untrusted source HTML/scripts/images stay inert; external links isolate origin",
+      "status": "passed",
+      "duration_ms": 168.3212080000003,
+      "evidence": {
+        "actual_fixture_files": true,
+        "html_executed": false,
+        "images_loaded": false,
+        "external_link_policy": "noopener noreferrer; no-referrer"
+      }
+    },
+    {
+      "name": "manual refresh reads changed files; invalid snapshot visibly clears stale data and recovers",
+      "status": "passed",
+      "duration_ms": 1162.9812919999995,
+      "evidence": {
+        "automatic_refresh_observed": false,
+        "invalid_data_action": "clear graph and show error",
+        "recovered": true
+      }
+    },
+    {
+      "name": "small screen remains usable without horizontal document overflow",
+      "status": "passed",
+      "duration_ms": 184.8401670000003,
+      "evidence": {
+        "viewport": "390x844",
+        "horizontal_document_overflow": false
+      }
+    },
+    {
+      "name": "modest benchmark renders 301 nodes/1403 edges with measured search/filter response",
+      "status": "passed",
+      "duration_ms": 413.2192920000016,
+      "evidence": {
+        "nodes": 301,
+        "edges": 1403,
+        "metrics": {
+          "graph_ready_ms": 986.2999999523163,
+          "layout_ms": 676.0999999046326,
+          "api_ms": 67.5,
+          "search_action_ms": 20.780625000001237,
+          "filter_action_ms": 38.09549999999945
+        }
+      }
+    },
+    {
+      "name": "P1 full-text body and summary search produces safe snippets and keeps filters",
+      "status": "passed",
+      "duration_ms": 175.0248329999995,
+      "evidence": {
+        "body_only_match": "wiki/concepts/topic-001/comparison.md",
+        "summary_match": "wiki/lessons/topic-001.md",
+        "claim_only_match": "wiki/concepts/topic-001/current.md",
+        "snippet_html_inert": true
+      }
+    },
+    {
+      "name": "P1 one/two-hop and source traces follow actual filtered edges",
+      "status": "passed",
+      "duration_ms": 1135.7920830000003,
+      "evidence": {
+        "one_hop": {
+          "nodes": 6,
+          "edges": 24
+        },
+        "two_hops": {
+          "nodes": 7,
+          "edges": 25
+        },
+        "source_trace": {
+          "nodes": 3,
+          "edges": 6
+        },
+        "hidden_relations_cannot_be_traversed": true
+      }
+    },
+    {
+      "name": "P1 directed paths expose real provenance and reject filtered or reversed routes",
+      "status": "passed",
+      "duration_ms": 846.9597089999988,
+      "evidence": {
+        "directed_route": {
+          "nodes": 4,
+          "edges": 3
+        },
+        "reversed_evidence_route": false,
+        "filtered_link_route": false
+      }
+    },
+    {
+      "name": "P1 status filter distinguishes archived pages and composes with types/tags",
+      "status": "passed",
+      "duration_ms": 146.3189999999995,
+      "evidence": {
+        "archived": 8,
+        "current": 41,
+        "all": 49,
+        "archived_without_concepts": 0
+      }
+    },
+    {
+      "name": "P1 real browser back/forward restores note tab and hops; repeat clicks do not add history",
+      "status": "passed",
+      "duration_ms": 473.0410410000004,
+      "evidence": {
+        "actual_back_forward": true,
+        "duplicate_clicks_add_entries": false,
+        "navigation_fetches": 0,
+        "refresh_pushes_entry": false
+      }
+    },
+    {
+      "name": "P1 initial deep links restore existing nodes and reject unknown paths without fetching files",
+      "status": "passed",
+      "duration_ms": 502.4732499999991,
+      "evidence": {
+        "initial_link": "existing comparison + source trace + metadata",
+        "rejected_invalid_links": 4,
+        "arbitrary_file_requests": 0
+      }
+    },
+    {
+      "name": "P1 cited context preserves versions evidence and hostile text with safe clipboard fallback",
+      "status": "passed",
+      "duration_ms": 337.8966670000009,
+      "evidence": {
+        "clipboard": "test adapter captures writeText payload; OS clipboard untouched and not tested",
+        "inference_preserved": true,
+        "hostile_markup_inert": true,
+        "fallback_selected_text": true
+      }
+    },
+    {
+      "name": "P1 real structural diagnostics remain navigable without phantom nodes or private payloads",
+      "status": "passed",
+      "duration_ms": 757.6983749999999,
+      "evidence": {
+        "diagnostic_codes": [
+          "broken_link",
+          "index_drift",
+          "missing_source",
+          "orphan_page"
+        ],
+        "count": 13,
+        "diagnostic_http": 200,
+        "private_scope_http": 422,
+        "private_payload_returned": false,
+        "dangling_edges": 0
+      }
+    },
+    {
+      "name": "P1 manual refresh preserves valid filtered hops and updates body only on request",
+      "status": "passed",
+      "duration_ms": 720.7475839999988,
+      "evidence": {
+        "filter_mode_selection_preserved": true,
+        "automatic_refresh": false,
+        "body_updated": true
+      }
+    },
+    {
+      "name": "P1 selected-all refresh includes new tags and relation kinds without losing state",
+      "status": "passed",
+      "duration_ms": 1227.9123749999999,
+      "evidence": {
+        "new_tag_selected": true,
+        "new_relation_selected": true,
+        "warnings_and_open_contradiction_before_truncated_body": true
+      }
+    },
+    {
+      "name": "P1 larger synthetic graph renders 1201 nodes/5603 edges with usable full-text and source trace",
+      "status": "passed",
+      "duration_ms": 898.4930419999982,
+      "evidence": {
+        "nodes": 1201,
+        "edges": 5603,
+        "source_trace_nodes": 3,
+        "metrics": {
+          "graph_ready_ms": 923.5999999046326,
+          "layout_ms": 2.9000000953674316,
+          "api_ms": 222.70000004768372,
+          "fulltext_action_ms": 59.043792000000394,
+          "source_trace_action_ms": 287.33300000000236,
+          "two_grid_relayouts_action_ms": 548.3917090000032
+        },
+        "capacity_claim": "single synthetic run only"
+      }
+    },
+    {
+      "name": "P2 deterministic type and rare-tag groups collapse real members and preserve counts",
+      "status": "passed",
+      "duration_ms": 581.1055410000008,
+      "evidence": {
+        "canonical_nodes": 19,
+        "canonical_edges": 86,
+        "type_groups": 4,
+        "tag_groups": 4,
+        "filtered_members": 13,
+        "repeated_controls_idempotent": true
+      }
+    },
+    {
+      "name": "P2 aggregate edges expose only underlying declared edge provenance",
+      "status": "passed",
+      "duration_ms": 127.10499999999956,
+      "evidence": {
+        "canonical_edges_covered_once": 86,
+        "selected_aggregate_members": 6,
+        "all_provenance_real": true
+      }
+    },
+    {
+      "name": "P2 saved layout restores coordinates and preferences and rejects malformed or foreign storage",
+      "status": "passed",
+      "duration_ms": 1767.5295420000002,
+      "evidence": {
+        "reload_restores": true,
+        "coordinates_exact": true,
+        "bodies_stored": false,
+        "foreign_corpus_rejected": true,
+        "malformed_storage_ignored": true
+      }
+    },
+    {
+      "name": "P2 JSON and PNG downloads require privacy confirmation and export only eligible data",
+      "status": "passed",
+      "duration_ms": 885.5419580000016,
+      "evidence": {
+        "cancel_downloads": 0,
+        "confirmed_downloads": 2,
+        "exported_nodes": 13,
+        "exported_edges": 38,
+        "derived_geometry_separate": true,
+        "outside_scope_omitted": true,
+        "png_signature_dimensions_valid": true
+      }
+    },
+    {
+      "name": "P2 opt-in refresh uses a real 15-second interval and preserves reader filters and dragged positions",
+      "status": "passed",
+      "duration_ms": 47760.584625,
+      "evidence": {
+        "opt_in_default": false,
+        "actual_interval_ms": 15052.22525,
+        "concurrent_requests_max": 1,
+        "reader_filters_positions_preserved": true,
+        "invalid_snapshot_cleared_and_recovered": true,
+        "stale_export_confirmation_cancelled": true,
+        "hidden_pause": "16.1 seconds with explicit document visibility adapter; native background-tab behavior not verified"
+      }
+    },
+    {
+      "name": "P2 compares real Git revisions and denies a private historical snapshot without changing checkout",
+      "status": "passed",
+      "duration_ms": 1012.020583999998,
+      "evidence": {
+        "actual_git_commits": 4,
+        "base_target": "full SHAs on selected HEAD ancestry",
+        "diff": {
+          "edges": {
+            "added": 6,
+            "changed": 0,
+            "removed": 7
+          },
+          "nodes": {
+            "added": 1,
+            "changed": 3,
+            "removed": 1
+          }
+        },
+        "private_revision_http": 422,
+        "checkout_unchanged": true
+      }
+    },
+    {
+      "name": "P2 large graph uses an explicitly labeled deterministic grid with measured response",
+      "status": "passed",
+      "duration_ms": 1044.6490840000042,
+      "evidence": {
+        "nodes": 1201,
+        "edges": 5603,
+        "layout": "deterministic grid",
+        "duplicate_positions": 0,
+        "metrics": {
+          "graph_ready_ms": 923.5999999046326,
+          "layout_ms": 2.9000000953674316,
+          "api_ms": 222.70000004768372,
+          "fulltext_action_ms": 59.043792000000394,
+          "source_trace_action_ms": 287.33300000000236,
+          "two_grid_relayouts_action_ms": 548.3917090000032
+        }
+      }
+    },
+    {
+      "name": "all browser contexts make no external requests, uncaught page errors or CSP violations",
+      "status": "passed",
+      "duration_ms": 16.706749999997555,
+      "evidence": {
+        "contexts": 12,
+        "external_requests": 0,
+        "uncaught_page_errors": 0,
+        "csp_violations": 0
+      }
+    }
+  ],
+  "metrics": {
+    "canonical": {
+      "graph_ready_ms": 160.09999990463257,
+      "layout_ms": 5.299999952316284,
+      "api_ms": 21
+    },
+    "demo_49_nodes": {
+      "graph_ready_ms": 210.29999995231628,
+      "layout_ms": 39.80000019073486,
+      "api_ms": 30.5,
+      "filter_action_ms": 34.23295800000005
+    },
+    "actual_malicious_fixture": {
+      "graph_ready_ms": 138.90000009536743,
+      "layout_ms": 6.099999904632568,
+      "api_ms": 17.90000009536743
+    },
+    "benchmark_301_nodes": {
+      "graph_ready_ms": 986.2999999523163,
+      "layout_ms": 676.0999999046326,
+      "api_ms": 67.5,
+      "search_action_ms": 20.780625000001237,
+      "filter_action_ms": 38.09549999999945
+    },
+    "p1_49_nodes": {
+      "graph_ready_ms": 223.10000014305115,
+      "layout_ms": 34,
+      "api_ms": 19.59999990463257
+    },
+    "p1_initial_deep_link": {
+      "graph_ready_ms": 202.59999990463257,
+      "layout_ms": 6.700000047683716,
+      "api_ms": 46.799999952316284
+    },
+    "p1_new_tag_relation": {
+      "graph_ready_ms": 192.5,
+      "layout_ms": 7.700000047683716,
+      "api_ms": 15.599999904632568
+    },
+    "p1_large_1201_nodes": {
+      "graph_ready_ms": 923.5999999046326,
+      "layout_ms": 2.9000000953674316,
+      "api_ms": 222.70000004768372,
+      "fulltext_action_ms": 59.043792000000394,
+      "source_trace_action_ms": 287.33300000000236,
+      "two_grid_relayouts_action_ms": 548.3917090000032
+    },
+    "p2_clusters_19_nodes": {
+      "graph_ready_ms": 209.5,
+      "layout_ms": 18.200000047683716,
+      "api_ms": 12.5
+    },
+    "p2_other_corpus": {
+      "graph_ready_ms": 243,
+      "layout_ms": 16.199999809265137,
+      "api_ms": 21.700000047683716
+    },
+    "p2_auto_15s": {
+      "graph_ready_ms": 143.20000004768372,
+      "layout_ms": 10,
+      "api_ms": 8.299999952316284,
+      "observed_first_refresh_ms": 15052.22525
+    },
+    "p2_real_git": {
+      "graph_ready_ms": 128.70000004768372,
+      "layout_ms": 8.200000047683716,
+      "api_ms": 15.200000047683716
+    }
+  },
+  "screenshots": [
+    "canonical.png",
+    "demo-49.png",
+    "demo-topic-focus.png",
+    "demo-comparison-detail.png",
+    "untrusted-note.png",
+    "invalid-snapshot.png",
+    "mobile-390.png",
+    "benchmark-301.png",
+    "p1-source-trace.png",
+    "p1-directed-path.png",
+    "p1-cited-context.png",
+    "p1-structural-diagnostics.png",
+    "p1-large-focused.png",
+    "p2-groups.png",
+    "p2-git-comparison.png",
+    "p2-large-grid.png"
+  ],
+  "unexpected_requests": [],
+  "page_errors": [],
+  "csp_violations": [],
+  "passed": 28,
+  "failed": 0,
+  "finished_at": "2026-10-18T04:47:55.377Z"
+}

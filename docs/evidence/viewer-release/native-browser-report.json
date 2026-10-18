@@ -1,0 +1,61 @@
+{
+  "suite": "Native headless Chromium clipboard and bounded real-tab visibility proof",
+  "started_at": "2026-10-18T04:46:16.249Z",
+  "results": [
+    {
+      "name": "native headless clipboard round-trip through the actual copy-context UI",
+      "status": "passed",
+      "evidence": {
+        "noNavigatorOverride": true,
+        "noMethodOverrides": true,
+        "writeNative": true,
+        "readNative": true,
+        "matches": true,
+        "characters": 2854,
+        "versions": true,
+        "fixture": true,
+        "sourcePaths": true,
+        "browserClipboardOnly": true,
+        "osClipboardReadOrWritten": false
+      }
+    },
+    {
+      "name": "native same-window tab visibility pauses auto-refresh",
+      "status": "unsupported",
+      "reason": "The real sibling-tab activation attempts left document.visibilityState visible; no document or timer overrides were used."
+    },
+    {
+      "name": "native proof has no page errors or external page requests",
+      "status": "passed",
+      "evidence": {
+        "pageErrors": 0,
+        "externalRequests": 0
+      }
+    }
+  ],
+  "page_errors": [],
+  "external_requests": [],
+  "visibility_attempts": [
+    {
+      "attempt": "activate sibling target",
+      "hidden": false,
+      "visibility": "visible",
+      "overridden": false
+    },
+    {
+      "attempt": "bring sibling page to front",
+      "hidden": false,
+      "visibility": "visible",
+      "overridden": false
+    }
+  ],
+  "clipboard_scope": "Unmodified browser Clipboard API in an explicitly headless disposable Chrome process; platform-independent clipboard, not OS clipboard integration.",
+  "clipboard_source": "https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/headless/chrome_browser_main_extra_parts_headless.cc",
+  "browser": "155.0.8059.80",
+  "headless_command_verified": true,
+  "passed": 2,
+  "failed": 0,
+  "unsupported": 1,
+  "same_window_verified": true,
+  "finished_at": "2026-10-18T04:46:18.004Z"
+}
