@@ -15,6 +15,11 @@ URL. `--check` prints a snapshot summary and structural diagnostic counts withou
 There is no `--export` or host override. It reads canonical raw/wiki (excluding wiki/log.md),
 not the generated vault. See [viewer guide](VIEWER.md) for filters, provenance and resource limits.
 Its help and starter `--check` have been run; browser/security/performance validation is separate.
+Grouping, saved layouts, opt-in refresh, revision comparison and confirmed JSON/PNG download
+are browser controls, not new CLI subcommands. Comparison uses the same loopback server's
+read-only `/api/compare?base=FULL_SHA&target=FULL_SHA`; both revisions must be in local HEAD
+ancestry and pass the confined history/snapshot checks. Browser exports do not write canonical
+files or update the portable vault. See the guide for scope and limits.
 
 This inventory is derived from actual argparse help and subprocess smoke tests, not proposed commands.
 See [captured help](evidence/review-help.txt), [smoke results](evidence/review-smoke.json) and

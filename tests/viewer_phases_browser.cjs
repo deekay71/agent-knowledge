@@ -378,4 +378,5 @@ module.exports = async function p1Tests(h) {
     await screenshot(q, 'p1-large-focused.png');
     return {nodes: 1201, edges: 5603, source_trace_nodes: 3, metrics: report.metrics.p1_large_1201_nodes, capacity_claim: 'single synthetic run only'};
   }, large.page);
+  return {large};
 };

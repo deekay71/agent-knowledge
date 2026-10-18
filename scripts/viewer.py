@@ -14,7 +14,7 @@ import re
 import stat
 import sys
 import threading
-from urllib.parse import quote, unquote, urlsplit
+from urllib.parse import parse_qs, quote, unquote, urlsplit
 
 import wiki
 from export_vault import prose_segments
@@ -105,6 +105,17 @@ def signature(info):
     return (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
 
 
+def corpus_identity(fd):
+    info = os.fstat(fd)
+    return hashlib.sha256(f'wiki-viewer-corpus-v1:{info.st_dev}:{info.st_ino}'.encode('ascii')).hexdigest()
+
+
+def check_identity(root, expected):
+    with directory_fd(root) as fd:
+        if corpus_identity(fd) != expected:
+            raise invalid('concurrent_change', 'Knowledge root changed while loading; refresh again.')
+
+
 def scan(root_fd):
     """Read only raw/ and wiki/ through directory FDs. wiki/log.md is never opened."""
     result, stamps, counters = {}, {}, {'bytes': 0, 'entries': 0}
@@ -150,13 +161,15 @@ def scan(root_fd):
 
 def read_snapshot(root):
     with directory_fd(root) as fd:
+        identity = corpus_identity(fd)
         first, before = scan(fd)
         second, after = scan(fd)
         if first != second or before != after:
             raise invalid('concurrent_change', 'Knowledge changed while loading; refresh again.')
     if 'wiki/index.md' not in first:
         raise invalid('missing_index', 'The canonical wiki index is missing.')
-    return first, before
+    check_identity(root, identity)
+    return first, before, identity
 
 
 def parse_page(data):
@@ -364,9 +377,11 @@ def revision(root):
         return None
 
 
-def build_graph(root):
+def graph_from_inputs(inputs, index_updated_at=None, revision_id=None, corpus_id=None):
+    """Validate a complete confined corpus before producing any public data."""
     try:
-        inputs, stamps = read_snapshot(root)
+        if 'wiki/index.md' not in inputs:
+            raise invalid('missing_index', 'The canonical wiki index is missing.')
         documents = {path: ({}, data.decode('utf-8')) if path == 'wiki/index.md' else parse_page(data)
                      for path, data in sorted(inputs.items())}
         diagnostic_map = {}
@@ -446,14 +461,27 @@ def build_graph(root):
             own = by_source[node['id']]
             node['diagnostic_ids'] = [diagnostic['id'] for diagnostic in own]
             node['evidence_complete'] = not any(diagnostic['code'] == 'missing_source' for diagnostic in own)
-        return {'format': FORMAT, 'source_digest': source_digest, 'nodes': nodes, 'edges': edges,
+        return {'format': FORMAT, 'source_digest': source_digest, 'corpus_id': corpus_id, 'nodes': nodes, 'edges': edges,
                 'diagnostics': diagnostics, 'diagnostic_summary': summary,
                 'warnings': sorted(set(warnings)), 'stats': {'nodes': len(nodes), 'edges': len(edges)},
-                'snapshot': {'revision': revision(root), 'index_updated_at': dt.datetime.fromtimestamp(stamps['wiki/index.md'][4] / 1e9, dt.timezone.utc).isoformat(),
+                'snapshot': {'revision': revision_id, 'index_updated_at': index_updated_at,
                              'loaded_at': dt.datetime.now(dt.timezone.utc).isoformat()}}
     except ViewerError:
         raise
     except (ValueError, TypeError, KeyError, OSError, RecursionError, OverflowError):
+        raise invalid() from None
+
+
+def build_graph(root):
+    try:
+        inputs, stamps, identity = read_snapshot(root)
+        graph = graph_from_inputs(inputs, dt.datetime.fromtimestamp(stamps['wiki/index.md'][4] / 1e9, dt.timezone.utc).isoformat(),
+                                  revision(root), identity)
+        check_identity(root, identity)
+        return graph
+    except ViewerError:
+        raise
+    except (ValueError, OSError):
         raise invalid() from None
 
 
@@ -522,12 +550,24 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 self.fail(404, 'not_found', 'Resource not found.')
                 return
             path = parts.path
-            if path == '/api/graph':
+            if path in ('/api/graph', '/api/compare'):
                 if not self.server.graph_slots.acquire(blocking=False):
                     self.fail(503, 'busy', 'The viewer is loading another snapshot; retry shortly.')
                     return
                 try:
-                    result = build_graph(self.server.knowledge_root)
+                    if path == '/api/compare':
+                        from viewer_git import compare
+                        try:
+                            if len(parts.query) > 256:
+                                raise ValueError()
+                            query = parse_qs(parts.query, strict_parsing=True, errors='strict', max_num_fields=2)
+                            if set(query) != {'base', 'target'} or any(len(value) != 1 for value in query.values()):
+                                raise ValueError()
+                        except (ValueError, UnicodeError):
+                            raise invalid('invalid_revision', 'Provide exactly two full commit SHAs.') from None
+                        result = compare(self.server.knowledge_root, query['base'][0], query['target'][0], sys.modules[__name__])
+                    else:
+                        result = build_graph(self.server.knowledge_root)
                     self.respond(200, json_bytes(result))
                 finally:
                     self.server.graph_slots.release()

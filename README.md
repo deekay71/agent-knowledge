@@ -32,6 +32,12 @@ python3 scripts/viewer.py
 
 Viewer chỉ đọc canonical, có tìm toàn văn, lọc loại/topic/trạng thái, reader, khám phá liên kết và provenance của cạnh. Có thể lần theo nguồn, sao chép context có citation và dùng lịch sử Back/Forward; **Tải lại dữ liệu** nạp snapshot mới. Starter có 4 node/9 cạnh, khác portable vault có 6 note/14 cạnh. Xem [hướng dẫn viewer](docs/VIEWER.md) để chạy demo lớn riêng, hiểu chẩn đoán dữ liệu và giới hạn. Viewer không tự khởi động, publish hoặc ghi ngược vào wiki.
 
+P2 thêm nhóm theo loại/tag, thu gọn/mở nhóm, lưu bố cục và bộ lọc tại trình duyệt.
+Có thể so sánh hai revision Git local bằng SHA đầy đủ, bật tự tải lại 15/30/60 giây,
+hoặc xuất JSON/PNG sau khi xem phạm vi và xác nhận. Nhóm là cách trình bày từ metadata;
+không tạo quan hệ tri thức mới. Compare chỉ hỗ trợ `.git/` nằm trong root và có giới hạn
+tài nguyên; submodule vẫn đọc graph được nhưng gitfile không hỗ trợ compare.
+
 <a id="co-che"></a>
 ## 2. Kiến trúc và dòng dữ liệu
 
@@ -298,6 +304,10 @@ P1 bổ sung khám phá và context có citation; bộ hồi quy Python đạt *
 Xem [nghiệm thu P1](docs/VIEWER-P1-VALIDATION-20261018.md) để xem browser QA,
 ảnh thực tế, phạm vi đã kiểm tra và các giới hạn.
 
+P2 đạt **229 tests Python và 28 nhóm browser** trên Chrome thật, gồm timer 15 giây,
+download JSON/PNG và compare Git local. [Nghiệm thu P2](docs/VIEWER-P2-VALIDATION-20261018.md)
+có ảnh, số đo graph 1.201 node và các giới hạn kiểm thử. P1/P2 hiện giữ local, chưa push.
+
 Các phần chưa triển khai/kiểm chứng: tự ingest bằng model, tìm kiếm vector, Claude hooks, native agent activation end-to-end, GUI Obsidian, CI/branch protection và project production đầu tiên. MVP cung cấp cơ chế local và workflow có thể kiểm tra, không tự kích hoạt tất cả các phần đó.
 
 <a id="tai-lieu"></a>
@@ -311,7 +321,7 @@ Các phần chưa triển khai/kiểm chứng: tự ingest bằng model, tìm ki
 | Project integration, đóng góp, rollback | [SUBMODULES](docs/SUBMODULES.md), [project adapter](templates/project-adapter.md) |
 | Cài/trust/tắt hooks | [HOOKS](docs/HOOKS.md), [consumer hook template](templates/codex-project-hooks.json) |
 | Xem và xuất vault | [VIEWING](docs/VIEWING.md), [Home](vault/Home.md) |
-| Graph local, reader và demo nhiều topic | [VIEWER](docs/VIEWER.md), [ADR 003](docs/ADR-003.md) |
+| Graph local, khám phá, nhóm, diff và export | [VIEWER](docs/VIEWER.md), [ADR 003](docs/ADR-003.md), [ADR 004](docs/ADR-004.md), [ADR 005](docs/ADR-005.md) |
 | Biểu mẫu authoring/review | [ingest](templates/ingest.md), [query](templates/query.md), [lint](templates/lint.md), [contribute](templates/contribute.md), [page](templates/page.md) |
 | Kết quả test theo giai đoạn | [MVP](docs/VALIDATION.md), [review](docs/REVIEW-20261015.md), [hooks](docs/HOOKS-VALIDATION-20261016.md), [vault](docs/VIEWING-VALIDATION-20261017.md) |
 | Publication và lịch sử local/public | [PUBLISHING](docs/PUBLISHING.md) |

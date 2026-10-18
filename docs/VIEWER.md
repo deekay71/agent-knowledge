@@ -3,7 +3,7 @@
 Viewer mở graph và nội dung canonical ngay trong trình duyệt, chỉ đọc qua HTTP tại
 `127.0.0.1`. Không cần Obsidian, Node.js, npm, API key hoặc dịch vụ LLM để chạy.
 Python dùng thư viện chuẩn; các thư viện giao diện đã có sẵn trong `viewer/vendor/`.
-Đây là phần triển khai local trên nhánh đóng góp; không tự publish hoặc bật server nền.
+Viewer chỉ chạy khi bạn chủ động mở server; không tự publish hoặc bật server nền.
 
 ## Chạy và dừng
 
@@ -64,8 +64,8 @@ Git riêng khi cần. Việc đọc canonical không yêu cầu tạo Git repo m
 - Tab **Liên kết** liệt kê cạnh đi ra/backlink của toàn snapshot, kể cả cạnh bị ẩn
   bởi filter. Chọn tham chiếu để chuyển sang note hoặc xem chi tiết cạnh.
 - Dùng **Tải lại dữ liệu** sau khi sửa canonical để nạp snapshot mới. Nếu load thất
-  bại, graph/reader cũ được xóa để không trình bày snapshot cũ như kết quả mới. Không có watcher,
-  polling tự động hoặc ghi ngược từ UI vào Markdown.
+  bại, graph/reader cũ được xóa để không trình bày snapshot cũ như kết quả mới. Mặc định
+  không tự polling; có thể bật **Tự tải lại** theo hướng dẫn bên dưới. Không ghi ngược vào Markdown.
 - Có thể kéo nền, zoom, kéo node, **Vừa khung**, **Sắp lại** layout hoặc **Đặt lại**
   lựa chọn/tìm kiếm/filter. Các thao tác này không sửa file nguồn.
 
@@ -144,6 +144,78 @@ báo concurrent change. Viewer không thay thế `wiki.py lint --base ACCEPTED_S
 review ngữ nghĩa hoặc kiểm tra staged trước commit. Nó không kiểm tra log/history,
 quyền sử dụng thực tế hoặc tính đúng của claim.
 
+## Nhóm, bố cục và tự tải lại
+
+**Nhóm & bố cục** có hai cách gom nhóm: theo loại nội dung hoặc theo tag ít phổ biến
+nhất trong tập note qua filter; tag bằng nhau chọn theo thứ tự ký tự. Đây là phép nhóm
+xác định từ metadata, không phải kết quả LLM hoặc phát hiện cộng đồng ngữ nghĩa. Node
+nhóm và cạnh gộp được đánh dấu dẫn xuất. Mở nhóm để xem note/cạnh gốc và provenance;
+chọn một note qua tìm kiếm hoặc tham chiếu sẽ mở nhóm chứa note đó.
+
+Thu gọn không phải filter riêng tư. Số note/cạnh canonical vẫn tách khỏi số đối tượng
+nhóm vẽ trên canvas. Khi hơn 500 node đang được bố trí, viewer dùng lưới xác định để
+tránh force layout đồng bộ chậm; vị trí và khoảng cách không diễn tả mức liên quan.
+Graph nhỏ dùng bố cục lực. **Sắp lại** tôn trọng cùng giới hạn.
+
+**Lưu bố cục & bộ lọc** lưu ID, tọa độ, zoom/pan và tùy chọn trong localStorage của
+origin hiện tại, tối đa 1 MiB. Dữ liệu lưu được kiểm tra khi đọc; không lưu body note,
+raw hay toàn bộ snapshot. Khóa riêng dùng định danh corpus mờ từ identity filesystem,
+không trả đường dẫn root. Đổi máy/clone/root hoặc cổng có thể không thấy bản lưu cũ.
+**Khôi phục** chỉ áp dụng ID còn hợp lệ; **Xóa bản lưu** chỉ xóa bản của corpus này.
+
+**Tự tải lại** mặc định tắt; chọn 15, 30 hoặc 60 giây. Tab ẩn tạm dừng; request đang
+chạy không bị một lượt polling khác chồng lên. Dữ liệu không đổi không chạy lại layout.
+Khi dữ liệu đổi, giữ selection/filter/vị trí còn hợp lệ và bố trí note mới. Snapshot lỗi
+xóa graph/reader, comparison và ý định export cũ, đồng thời tắt tự tải lại. Lựa chọn bật
+tự tải lại không được lưu qua lần mở trang mới. Không có daemon sau khi đóng viewer.
+
+## So sánh revision Git
+
+Trong phần công cụ dữ liệu, nhập **hai SHA commit đầy đủ** thuộc lịch sử HEAD local
+rồi chọn **So sánh**. Không dùng tên nhánh, `HEAD~1`, đường dẫn, tag hoặc SHA rút gọn.
+Đây là diff của graph tri thức, không phải diff code của cả repo: commit chỉ sửa viewer
+có thể cho kết quả 0 thay đổi kiến thức. UI không checkout, merge hoặc cập nhật pin.
+
+Kết quả gồm note/cạnh thêm, bỏ, thay đổi; các trường đổi được nêu tên. Node lịch sử chỉ
+trả summary metadata đủ điều kiện, không trả body/metadata object nguyên bản. Cạnh giữ
+loại, chiều và provenance. Version/claim khác nhau không được diễn giải thành nguồn mới
+đúng hơn. Hai snapshot đều phải qua kiểm tra; một nguồn private trong revision cũ cũng
+làm toàn bộ compare bị từ chối. Index bị giữ lại có chẩn đoán như graph thông thường.
+
+Compare chỉ hỗ trợ `.git/` thật bên trong root. Submodule/worktree dùng gitfile, history
+thiếu object hoặc vượt giới hạn không được mở rộng sang thư mục khác/fetch mạng. Backend
+sao chép object regular được cho phép vào thư mục tạm private có giới hạn, dùng Git để
+đọc object tại đó rồi dọn. Không đọc config/hook/alternate/replacement refs của repo gốc.
+Không gửi nội dung ra ngoài máy hoặc sửa Git state gốc.
+
+| Giới hạn compare | Ngưỡng |
+|---|---|
+| Byte object store được copy | 256 MiB; mỗi file tối đa 128 MiB. |
+| Git objects / commits trong ancestry | 10.000 / 2.000. |
+| Commit giải nén | 1 MiB mỗi commit; tổng 16 MiB. |
+| Tree metadata giải nén | 2 MiB mỗi snapshot. |
+| Thời gian một compare | 20 giây, kiểm tra trong quá trình đọc/chạy subprocess. |
+| JSON response compare | 10 MiB. |
+
+Giới hạn note/cạnh/diagnostic của graph vẫn áp dụng cho từng revision. Repo lớn hơn
+có thể bị từ chối dù corpus hiện tại nhỏ. Đây là hỗ trợ Git local có giới hạn, không
+phải dịch vụ duyệt mọi history/remote hoặc cam kết xử lý mọi object store hỏng.
+
+## Xuất JSON và ảnh
+
+**Xuất JSON** hoặc **Xuất PNG** mở hộp xác nhận với phạm vi cụ thể. File có thể chứa tên
+tài liệu, nguồn hoặc nội dung cần kiểm soát: kiểm tra trước khi chia sẻ. Không có upload
+tự động. Hủy không tạo file tải xuống; snapshot/filter đổi thì cần xác nhận lại.
+
+- JSON chứa các note/cạnh canonical qua filter và vùng khám phá hiện tại, **kể cả thành
+  viên nhóm thu gọn**. Nhóm UI nằm riêng và được đánh dấu dẫn xuất. Không chứa comparison,
+  snapshot cũ hoặc note ngoài phạm vi. Giới hạn file 64 MiB.
+- PNG chụp graph đang hiển thị, không chụp reader hay toàn màn hình; tối đa 2048×2048 pixel
+  và 20 MiB. Nhãn nhóm vẫn thể hiện đây là cách trình bày dẫn xuất.
+
+Export browser khác `scripts/export_vault.py`: không tạo một nguồn wiki mới, không cập
+nhật vault, Git hoặc log và không được dùng bản xuất làm bằng chứng độc lập khi ingest.
+
 ## Demo nhiều topic
 
 Tạo fixture riêng ở một destination mới, có parent tồn tại và không qua symlink:
@@ -176,8 +248,9 @@ Chỉ nhận GET/HEAD; không có API ghi, chọn đường dẫn file tùy ý h
 note. Các route static là allowlist cố định. Snapshot chỉ đọc file Markdown thường;
 đường dẫn/symlink không hợp lệ và metadata project/private làm load thất bại.
 Root cũng không được đi qua symlink. Đường dẫn `.git` không được phục vụ; backend chỉ
-đọc `.git/HEAD` cùng loose/packed refs nằm trong root để lấy revision. Không chạy Git
-subprocess, đọc config hoặc đi theo gitfile/worktree metadata ra ngoài root.
+đọc `.git/HEAD` cùng loose/packed refs nằm trong root để lấy revision của graph. Chỉ
+compare chủ động mới dùng Git subprocess trên bản object tạm cô lập; không đọc config
+gốc hoặc đi theo gitfile/worktree metadata ra ngoài root.
 
 Giao diện dùng Markdown renderer và sanitizer local, không cho HTML trong note trở
 thành mã thực thi. CSP hạn chế resource về cùng origin và chặn ảnh, font, object,
@@ -199,7 +272,7 @@ cơ chế ẩn secrets. Không dùng viewer như dịch vụ chia sẻ qua tunne
 | Tổng byte note | 32 MiB. |
 | Entry thư mục được duyệt | 8.000. |
 | Độ sâu dưới raw/wiki | Tối đa 24 bước thư mục. |
-| Load graph đồng thời | Một; request khác nhận HTTP 503 và cần thử lại. |
+| Load graph/compare đồng thời | Một; request khác nhận HTTP 503 và cần thử lại. |
 
 Các ngưỡng trên là guard khi đọc, chưa phải benchmark hoặc SLA. Nền tảng phải có
 `O_NOFOLLOW`, `O_DIRECTORY` và hỗ trợ đọc bằng directory file descriptor; môi trường
@@ -227,10 +300,12 @@ viết cho repo này; không sao chép code, asset hoặc branding của Graphif
 
 P0 cung cấp graph, filter, reader, provenance và Refresh thủ công. P1 bổ sung tìm toàn
 văn, khám phá hop/đường đi/nguồn, lọc trạng thái, copy context, diagnostics và lịch sử
-điều hướng. Clustering, Git diff, auto-refresh và export của viewer thuộc P2.
+điều hướng. P2 bổ sung nhóm xác định, layout lưu tại browser, Git diff có giới hạn,
+auto-refresh chủ động và export JSON/PNG có xác nhận.
 Portable export hiện có vẫn dùng `scripts/export_vault.py`.
 
-Xem [báo cáo validation, ảnh browser và benchmark](VIEWER-VALIDATION-20261018.md):
-197 tests Python và 10 nhóm browser tests đã pass trên môi trường được ghi rõ trong báo cáo.
+Các báo cáo [MVP](VIEWER-VALIDATION-20261018.md), [P1](VIEWER-P1-VALIDATION-20261018.md)
+và [P2](VIEWER-P2-VALIDATION-20261018.md) ghi kết quả test, ảnh browser và benchmark
+của từng giai đoạn, với môi trường và giới hạn cụ thể.
 Có tính năng hoặc chạy `--check` không tự chứng minh mọi nền tảng/nội dung đều được kiểm chứng.
-Xem thêm [ADR 003](ADR-003.md), [ADR 004](ADR-004.md), [CLI](CLI.md) và [policy](POLICY.md).
+Xem thêm [ADR 003](ADR-003.md), [ADR 004](ADR-004.md), [ADR 005](ADR-005.md), [CLI](CLI.md) và [policy](POLICY.md).

@@ -410,8 +410,10 @@ async function main() {
     return {nodes: 301, edges: 1403, metrics: report.metrics.benchmark_301_nodes};
   }, benchmark.page);
 
-  await require('./viewer_phases_browser.cjs')({repo, temporary, python, report, open, ready,
+  const phases = await require('./viewer_phases_browser.cjs')({repo, temporary, python, report, open, ready,
     stats, selectNote, screenshot, group, mutateNote, sleep});
+  await require('./viewer_p2_browser.cjs')({repo, temporary, output, python, report, open, ready,
+    stats, selectNote, screenshot, group, mutateNote, sleep, phases});
 
   await group('all browser contexts make no external requests, uncaught page errors or CSP violations', async () => {
     for (const item of opened) {
