@@ -1,0 +1,17 @@
+{
+  "verified_at": "2026-10-18T04:11:05.094949+00:00",
+  "repository": "https://github.com/deekay71/agent-knowledge",
+  "visibility": "PUBLIC",
+  "published_branch": "contrib/local-graph-viewer",
+  "remote_branch_sha": "5b31849749ddde53601d3dab359112707860b50e",
+  "included_docs_commit": "c89940b0b42f0773db994f3f6e4ae0c1f978569e",
+  "remote_main_unchanged": "67e8bfb22a3281092c0e4bded0a3b702b279b486",
+  "workflows": 0,
+  "check_runs": 0,
+  "commit_statuses": 0,
+  "actions_runs": 0,
+  "ci_interpretation": "No CI configured or reported; no CI success claim.",
+  "publication_scope": "MVP and README only. Subsequent P1/P2 local work not authorized for push.",
+  "review": "Two outgoing commits scanned for common token/private-key patterns, private home paths and sensitive assignments: no matches. Retained screenshots are synthetic demo UI. This is a scoped review, not a guarantee of exhaustive secret detection.",
+  "push": "Normal explicit SHA-to-branch refspec. No force push, main merge or persistent Git/auth configuration changes."
+}

@@ -14,8 +14,8 @@ python3 scripts/viewer.py --check
 python3 scripts/viewer.py
 ```
 
-`--check` đọc và kiểm tra snapshot, in JSON gồm số node/cạnh, fingerprint, revision và
-cảnh báo; không mở HTTP hoặc tạo file export. Lệnh thứ hai in URL
+`--check` đọc và kiểm tra snapshot, in JSON gồm số node/cạnh, fingerprint, revision,
+cảnh báo và số chẩn đoán; không mở HTTP hoặc tạo file export. Lệnh thứ hai in URL
 `http://127.0.0.1:8765/`. Mở đúng URL đó; dùng **Ctrl+C** trong terminal để dừng server.
 Không dùng `localhost`: kiểm tra Host của server yêu cầu đúng `127.0.0.1:PORT`.
 
@@ -27,8 +27,9 @@ python3 scripts/viewer.py [--root ROOT] [--port PORT] [--check]
 
 Root mặc định là repo chứa `scripts/viewer.py`, không phải cwd của shell. `--port` mặc
 định 8765, nhận 0–65535; 0 yêu cầu hệ điều hành chọn cổng trống, xem URL thực tế in ra.
-Không có option đổi host hoặc `--export`. Mã thoát là 0 khi check thành công/dừng bằng
-Ctrl+C, 2 khi sai tham số, không đọc được snapshot hoặc không mở được server.
+Không có option đổi host hoặc `--export`. Mã thoát là 0 khi check không có error diagnostic
+hoặc dừng bằng Ctrl+C; 1 khi check có error diagnostic như nguồn khai báo bị thiếu;
+2 khi sai tham số, snapshot bị từ chối hoàn toàn hoặc không mở được server.
 
 Đọc một wiki khác hoặc checkout submodule đã pin bằng runtime của clone hiện tại:
 
@@ -45,12 +46,16 @@ Git riêng khi cần. Việc đọc canonical không yêu cầu tạo Git repo m
 
 ## Đọc graph
 
-- Tìm node theo title hoặc ID/đường dẫn, không phân biệt hoa thường/dấu tiếng Việt.
-  Dùng ↑/↓ và Enter để chọn kết quả, Escape để xóa tìm kiếm. Chưa có tìm toàn văn.
+- Tìm toàn văn trong title, ID/đường dẫn, summary, body và claim, không phân biệt hoa
+  thường/dấu tiếng Việt. Kết quả ghi trường khớp và đoạn trích; đây là tìm chuỗi,
+  không phải tìm kiếm ngữ nghĩa. Dùng ↑/↓ và Enter để chọn, Escape để xóa tìm kiếm.
 - Lọc theo loại node và topic/tag: node phải khớp một loại đã chọn và ít nhất một tag
   đã chọn. Nhóm **Không có tag** dành cho note không gắn tag. Filter quan hệ chỉ ẩn
   cạnh, không tự ẩn node. Số cạnh/node ở header là đang hiện/tổng; số cạnh/tag trong
   checkbox đếm toàn snapshot. Filter chỉ điều khiển hiển thị, không phân quyền dữ liệu.
+- Lọc trạng thái để xem các note đang dùng hoặc đã superseded/deprecated. **Đang dùng**
+  chỉ loại các trạng thái đã thay thế; không có nghĩa nội dung đã được kiểm chứng.
+  Nguồn cũ không tự bị ẩn vì có phiên bản mới: viewer không suy ra nguồn nào là đúng nhất.
 - Chọn node để đọc nội dung, metadata, các cạnh đi ra và backlink. Nhãn fixture,
   status, phiên bản và evidence/inference/unknown vẫn phải được đọc cùng claim.
 - Chọn cạnh để xem loại quan hệ và nơi khai báo, ví dụ `metadata.sources` hoặc
@@ -63,6 +68,40 @@ Git riêng khi cần. Việc đọc canonical không yêu cầu tạo Git repo m
   polling tự động hoặc ghi ngược từ UI vào Markdown.
 - Có thể kéo nền, zoom, kéo node, **Vừa khung**, **Sắp lại** layout hoặc **Đặt lại**
   lựa chọn/tìm kiếm/filter. Các thao tác này không sửa file nguồn.
+
+### Khám phá, citation và lịch sử
+
+Nhóm **Khám phá liên kết** cho phép xem lân cận 1–2 hop, tìm đường giữa hai note và
+lần theo nguồn. Kết quả dùng các cạnh thực đang đủ điều kiện qua filter, ghi rõ chiều
+duyệt, loại quan hệ và provenance. Đường đi là cách điều hướng, không phải giải thích
+nhân quả hay chứng nhận claim. Không có đường phù hợp thì báo không tìm thấy; viewer
+không bổ sung quan hệ để nối hai note. Giữ index trong filter có thể nối nhiều topic
+qua trang điều hướng; hãy bỏ loại điều hướng nếu muốn tập trung vào nội dung.
+
+**Sao chép context có nguồn** tạo văn bản có đường dẫn canonical, nhãn claim, phiên
+bản, snapshot và citation. Kiểm tra bản xem trước và cảnh báo thiếu bằng chứng/cắt
+ngắn trước khi dán. Chỉ thao tác sao chép mới yêu cầu ghi clipboard; viewer không gửi
+nội dung tới LLM hay dịch vụ khác, không lưu câu trả lời trở lại wiki.
+
+Chọn note/cạnh và tab reader cập nhật fragment URL; có thể dùng Back/Forward hoặc
+mở deep link trên cùng wiki. ID không còn trong snapshot được xử lý như lựa chọn
+không tồn tại, không dùng URL làm đường dẫn để đọc thêm file. URL không chứa body.
+Đổi root hoặc commit có thể làm liên kết cũ không còn phù hợp.
+
+### Chẩn đoán cấu trúc
+
+Bảng chẩn đoán báo link nội bộ đủ phạm vi nhưng thiếu đích, nguồn được khai báo nhưng
+không có, bài thiếu liên kết đi vào và index lệch. Không tạo node/cạnh giả cho các đích
+thiếu. Tham chiếu ngoài raw/wiki, log và file riêng của project không được mở để kiểm tra.
+Orphan ở đây xét liên kết từ bài khác, bỏ qua index và self-link; chỉ là tín hiệu bảo trì.
+Khi index lệch, viewer giữ chẩn đoán nhưng không trả body hoặc tạo cạnh từ body index
+đó. Index có frontmatter/private metadata không đúng quy ước là lỗi dừng; các bài
+đủ điều kiện còn lại không được dùng để hợp thức hóa nội dung index chưa kiểm tra.
+
+Snapshot có chẩn đoán thiếu nguồn được ghi rõ **thiếu bằng chứng**, không trở thành
+snapshot đã được xác minh chỉ vì còn render được. Private scope, đường dẫn không an
+toàn, symlink, cấu trúc metadata/claim không hợp lệ và sai version của nguồn hiện có
+vẫn là lỗi dừng toàn bộ. Sửa canonical bằng workflow đóng góp; viewer không sửa tự động.
 
 Graph gồm các file `.md` hợp lệ trong `raw/`, các bài trong `wiki/` và `wiki/index.md`.
 Nó không nạp `wiki/log.md`, generated `Home.md`, `vault/`, inbox hoặc context riêng của
@@ -155,6 +194,7 @@ cơ chế ẩn secrets. Không dùng viewer như dịch vụ chia sẻ qua tunne
 |---|---|
 | Note trong một snapshot | 2.000, gồm index. |
 | Cạnh tường minh trong một snapshot | 20.000. |
+| Chẩn đoán cấu trúc trong một snapshot | 10.000; UI hiển thị tối đa 100. |
 | Dung lượng mỗi note | 1 MiB. |
 | Tổng byte note | 32 MiB. |
 | Entry thư mục được duyệt | 8.000. |
@@ -185,12 +225,12 @@ Các distribution lấy từ official npm registry, giữ nguyên file phân ph�
 Không cần cài npm hoặc chạy build khi dùng viewer. Giao diện và code tích hợp được
 viết cho repo này; không sao chép code, asset hoặc branding của Graphify.
 
-P0 tập trung graph, tìm title/ID, filter, reader, provenance và Refresh thủ công.
-Chưa có full-text search, mở rộng nhiều hop, tìm đường đi, copy context hoặc bảng
-diagnostics (P1); clustering, Git diff, auto-refresh và export của viewer (P2) cũng
-chưa triển khai. Portable export hiện có vẫn dùng `scripts/export_vault.py`.
+P0 cung cấp graph, filter, reader, provenance và Refresh thủ công. P1 bổ sung tìm toàn
+văn, khám phá hop/đường đi/nguồn, lọc trạng thái, copy context, diagnostics và lịch sử
+điều hướng. Clustering, Git diff, auto-refresh và export của viewer thuộc P2.
+Portable export hiện có vẫn dùng `scripts/export_vault.py`.
 
 Xem [báo cáo validation, ảnh browser và benchmark](VIEWER-VALIDATION-20261018.md):
 197 tests Python và 10 nhóm browser tests đã pass trên môi trường được ghi rõ trong báo cáo.
 Có tính năng hoặc chạy `--check` không tự chứng minh mọi nền tảng/nội dung đều được kiểm chứng.
-Xem thêm [ADR 003](ADR-003.md), [CLI](CLI.md) và [policy](POLICY.md).
+Xem thêm [ADR 003](ADR-003.md), [ADR 004](ADR-004.md), [CLI](CLI.md) và [policy](POLICY.md).

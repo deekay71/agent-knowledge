@@ -1,0 +1,341 @@
+{
+  "suite": "Real browser integration; actual temporary-file data and loopback API, no response mocks",
+  "started_at": "2026-10-18T04:19:59.876Z",
+  "environment": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "node": "v26.11.1",
+    "cpu": "Apple M4",
+    "logical_cpus": 10,
+    "memory_gib": 16,
+    "browser": "155.0.8059.80"
+  },
+  "metric_notes": "graph_ready_ms is navigation-to-ready in the browser; layout_ms uses Cytoscape layout events; action_ms includes Playwright dispatch/wait overhead. Single-run observations, not production capacity claims.",
+  "results": [
+    {
+      "name": "canonical snapshot renders only its four nodes and nine declared edges",
+      "status": "passed",
+      "duration_ms": 524.2008749999999,
+      "evidence": {
+        "nodes": 4,
+        "edges": 9,
+        "automatic_refresh_observed": false
+      }
+    },
+    {
+      "name": "title and path search, keyboard focus, list selection and link directions",
+      "status": "passed",
+      "duration_ms": 186.26004199999988,
+      "evidence": {
+        "outgoing": 4,
+        "backlinks": 2
+      }
+    },
+    {
+      "name": "real canvas node click, neighbor highlight, zoom, pan, drag, fit and reset",
+      "status": "passed",
+      "duration_ms": 664.69075,
+      "evidence": {
+        "canvas_node_clicked": true,
+        "node_dragged": true,
+        "background_panned": true
+      }
+    },
+    {
+      "name": "real canvas edge click opens declared provenance",
+      "status": "passed",
+      "duration_ms": 65.82825000000003,
+      "evidence": {
+        "kind": "claim",
+        "provenance": {
+          "file": "wiki/concepts/queue.md",
+          "section": "metadata.claims[0].sources"
+        }
+      }
+    },
+    {
+      "name": "demo is 49 real synthetic nodes; type AND tag filters and select-all work",
+      "status": "passed",
+      "duration_ms": 1392.215917,
+      "evidence": {
+        "nodes": 49,
+        "edges": 227,
+        "concept_and_topic": 3,
+        "all_types_one_topic": 6
+      }
+    },
+    {
+      "name": "actual untrusted source HTML/scripts/images stay inert; external links isolate origin",
+      "status": "passed",
+      "duration_ms": 140.08395800000017,
+      "evidence": {
+        "actual_fixture_files": true,
+        "html_executed": false,
+        "images_loaded": false,
+        "external_link_policy": "noopener noreferrer; no-referrer"
+      }
+    },
+    {
+      "name": "manual refresh reads changed files; invalid snapshot visibly clears stale data and recovers",
+      "status": "passed",
+      "duration_ms": 1142.5085410000002,
+      "evidence": {
+        "automatic_refresh_observed": false,
+        "invalid_data_action": "clear graph and show error",
+        "recovered": true
+      }
+    },
+    {
+      "name": "small screen remains usable without horizontal document overflow",
+      "status": "passed",
+      "duration_ms": 148.51187500000015,
+      "evidence": {
+        "viewport": "390x844",
+        "horizontal_document_overflow": false
+      }
+    },
+    {
+      "name": "modest benchmark renders 301 nodes/1403 edges with measured search/filter response",
+      "status": "passed",
+      "duration_ms": 325.07124999999996,
+      "evidence": {
+        "nodes": 301,
+        "edges": 1403,
+        "metrics": {
+          "graph_ready_ms": 1170.7000000476837,
+          "layout_ms": 907.2999999523163,
+          "api_ms": 46.700000047683716,
+          "search_action_ms": 16.622833000000355,
+          "filter_action_ms": 32.98199999999997
+        }
+      }
+    },
+    {
+      "name": "P1 full-text body and summary search produces safe snippets and keeps filters",
+      "status": "passed",
+      "duration_ms": 141.4829579999987,
+      "evidence": {
+        "body_only_match": "wiki/concepts/topic-001/comparison.md",
+        "summary_match": "wiki/lessons/topic-001.md",
+        "claim_only_match": "wiki/concepts/topic-001/current.md",
+        "snippet_html_inert": true
+      }
+    },
+    {
+      "name": "P1 one/two-hop and source traces follow actual filtered edges",
+      "status": "passed",
+      "duration_ms": 1033.4055000000008,
+      "evidence": {
+        "one_hop": {
+          "nodes": 6,
+          "edges": 24
+        },
+        "two_hops": {
+          "nodes": 7,
+          "edges": 25
+        },
+        "source_trace": {
+          "nodes": 3,
+          "edges": 6
+        },
+        "hidden_relations_cannot_be_traversed": true
+      }
+    },
+    {
+      "name": "P1 directed paths expose real provenance and reject filtered or reversed routes",
+      "status": "passed",
+      "duration_ms": 680.0338330000013,
+      "evidence": {
+        "directed_route": {
+          "nodes": 4,
+          "edges": 3
+        },
+        "reversed_evidence_route": false,
+        "filtered_link_route": false
+      }
+    },
+    {
+      "name": "P1 status filter distinguishes archived pages and composes with types/tags",
+      "status": "passed",
+      "duration_ms": 102.01262500000121,
+      "evidence": {
+        "archived": 8,
+        "current": 41,
+        "all": 49,
+        "archived_without_concepts": 0
+      }
+    },
+    {
+      "name": "P1 real browser back/forward restores note tab and hops; repeat clicks do not add history",
+      "status": "passed",
+      "duration_ms": 421.8118749999994,
+      "evidence": {
+        "actual_back_forward": true,
+        "duplicate_clicks_add_entries": false,
+        "navigation_fetches": 0,
+        "refresh_pushes_entry": false
+      }
+    },
+    {
+      "name": "P1 initial deep links restore existing nodes and reject unknown paths without fetching files",
+      "status": "passed",
+      "duration_ms": 360.32879199999843,
+      "evidence": {
+        "initial_link": "existing comparison + source trace + metadata",
+        "rejected_invalid_links": 4,
+        "arbitrary_file_requests": 0
+      }
+    },
+    {
+      "name": "P1 cited context preserves versions evidence and hostile text with safe clipboard fallback",
+      "status": "passed",
+      "duration_ms": 287.05325000000084,
+      "evidence": {
+        "clipboard": "test adapter captures writeText payload; OS clipboard untouched and not tested",
+        "inference_preserved": true,
+        "hostile_markup_inert": true,
+        "fallback_selected_text": true
+      }
+    },
+    {
+      "name": "P1 real structural diagnostics remain navigable without phantom nodes or private payloads",
+      "status": "passed",
+      "duration_ms": 634.9616669999996,
+      "evidence": {
+        "diagnostic_codes": [
+          "broken_link",
+          "index_drift",
+          "missing_source",
+          "orphan_page"
+        ],
+        "count": 13,
+        "diagnostic_http": 200,
+        "private_scope_http": 422,
+        "private_payload_returned": false,
+        "dangling_edges": 0
+      }
+    },
+    {
+      "name": "P1 manual refresh preserves valid filtered hops and updates body only on request",
+      "status": "passed",
+      "duration_ms": 669.8692920000012,
+      "evidence": {
+        "filter_mode_selection_preserved": true,
+        "automatic_refresh": false,
+        "body_updated": true
+      }
+    },
+    {
+      "name": "P1 selected-all refresh includes new tags and relation kinds without losing state",
+      "status": "passed",
+      "duration_ms": 827.9816250000003,
+      "evidence": {
+        "new_tag_selected": true,
+        "new_relation_selected": true,
+        "warnings_and_open_contradiction_before_truncated_body": true
+      }
+    },
+    {
+      "name": "P1 larger synthetic graph renders 1201 nodes/5603 edges with usable full-text and source trace",
+      "status": "passed",
+      "duration_ms": 724.4041250000009,
+      "evidence": {
+        "nodes": 1201,
+        "edges": 5603,
+        "source_trace_nodes": 3,
+        "metrics": {
+          "graph_ready_ms": 16368.299999952316,
+          "layout_ms": 15545.5,
+          "api_ms": 165,
+          "fulltext_action_ms": 159.20191599999816,
+          "source_trace_action_ms": 228.3810420000009
+        },
+        "capacity_claim": "single synthetic run only"
+      }
+    },
+    {
+      "name": "all browser contexts make no external requests, uncaught page errors or CSP violations",
+      "status": "passed",
+      "duration_ms": 4.093625000001339,
+      "evidence": {
+        "contexts": 8,
+        "external_requests": 0,
+        "uncaught_page_errors": 0,
+        "csp_violations": 0
+      }
+    }
+  ],
+  "metrics": {
+    "canonical": {
+      "graph_ready_ms": 136,
+      "layout_ms": 5.400000095367432,
+      "api_ms": 11.799999952316284
+    },
+    "demo_49_nodes": {
+      "graph_ready_ms": 168,
+      "layout_ms": 39.39999985694885,
+      "api_ms": 13.800000190734863,
+      "filter_action_ms": 33.17737500000021
+    },
+    "actual_malicious_fixture": {
+      "graph_ready_ms": 133.09999990463257,
+      "layout_ms": 7.299999952316284,
+      "api_ms": 7.1000001430511475
+    },
+    "benchmark_301_nodes": {
+      "graph_ready_ms": 1170.7000000476837,
+      "layout_ms": 907.2999999523163,
+      "api_ms": 46.700000047683716,
+      "search_action_ms": 16.622833000000355,
+      "filter_action_ms": 32.98199999999997
+    },
+    "p1_49_nodes": {
+      "graph_ready_ms": 176.20000004768372,
+      "layout_ms": 40.40000009536743,
+      "api_ms": 20.299999952316284
+    },
+    "p1_initial_deep_link": {
+      "graph_ready_ms": 134.79999995231628,
+      "layout_ms": 5.1000001430511475,
+      "api_ms": 14.900000095367432
+    },
+    "p1_new_tag_relation": {
+      "graph_ready_ms": 128.20000004768372,
+      "layout_ms": 9.5,
+      "api_ms": 8.800000190734863
+    },
+    "p1_large_1201_nodes": {
+      "graph_ready_ms": 16368.299999952316,
+      "layout_ms": 15545.5,
+      "api_ms": 165,
+      "fulltext_action_ms": 159.20191599999816,
+      "source_trace_action_ms": 228.3810420000009
+    }
+  },
+  "screenshots": [
+    "canonical.png",
+    "demo-49.png",
+    "demo-topic-focus.png",
+    "demo-comparison-detail.png",
+    "untrusted-note.png",
+    "invalid-snapshot.png",
+    "mobile-390.png",
+    "benchmark-301.png",
+    "p1-source-trace.png",
+    "p1-directed-path.png",
+    "p1-cited-context.png",
+    "p1-structural-diagnostics.png",
+    "p1-large-focused.png"
+  ],
+  "unexpected_requests": [],
+  "page_errors": [],
+  "csp_violations": [],
+  "passed": 21,
+  "failed": 0,
+  "finished_at": "2026-10-18T04:20:31.989Z",
+  "screenshots_retained_in_repository": [
+    "p1-directed-path.png",
+    "p1-cited-context.png"
+  ],
+  "artifact_note": "Other screenshots remain disposable local QA outputs. Retained screenshots use synthetic demo notes only."
+}

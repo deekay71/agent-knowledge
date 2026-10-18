@@ -30,7 +30,7 @@ python3 scripts/viewer.py --check
 python3 scripts/viewer.py
 ```
 
-Viewer chỉ đọc canonical, có tìm title/ID, lọc loại/topic, reader và provenance của cạnh; dùng **Tải lại dữ liệu** để nạp lại. Starter có 4 node/9 cạnh, khác portable vault có 6 note/14 cạnh. Xem [hướng dẫn viewer](docs/VIEWER.md) để chạy demo lớn riêng, hiểu biên an toàn và giới hạn. Viewer đã được triển khai local; không tự khởi động, publish hoặc ghi ngược vào wiki.
+Viewer chỉ đọc canonical, có tìm toàn văn, lọc loại/topic/trạng thái, reader, khám phá liên kết và provenance của cạnh. Có thể lần theo nguồn, sao chép context có citation và dùng lịch sử Back/Forward; **Tải lại dữ liệu** nạp snapshot mới. Starter có 4 node/9 cạnh, khác portable vault có 6 note/14 cạnh. Xem [hướng dẫn viewer](docs/VIEWER.md) để chạy demo lớn riêng, hiểu chẩn đoán dữ liệu và giới hạn. Viewer không tự khởi động, publish hoặc ghi ngược vào wiki.
 
 <a id="co-che"></a>
 ## 2. Kiến trúc và dòng dữ liệu
@@ -293,6 +293,10 @@ Mốc triển khai **2026-10-17 UTC: 154 tests local pass**, gồm schema/histor
 Đợt hoàn thiện README chạy thêm **11 kịch bản smoke** với Git thật để kiểm tra lệnh mẫu, merge/vault và submodule; xem [báo cáo tài liệu](docs/README-VALIDATION-20261017.md). Không tính các lần gọi lệnh thành unit tests và không chạy lại toàn bộ suite trong đợt chỉ sửa docs này.
 
 Đợt viewer **2026-10-18 UTC** chạy lại toàn bộ suite: **197 tests Python pass**, cùng **10 nhóm browser integration tests** trên Chrome thật. Có ảnh giao diện và benchmark synthetic 301 node/1.403 cạnh trong [báo cáo viewer](docs/VIEWER-VALIDATION-20261018.md); không phải test LLM hoặc kết quả CI.
+
+P1 bổ sung khám phá và context có citation; bộ hồi quy Python đạt **208 tests**.
+Xem [nghiệm thu P1](docs/VIEWER-P1-VALIDATION-20261018.md) để xem browser QA,
+ảnh thực tế, phạm vi đã kiểm tra và các giới hạn.
 
 Các phần chưa triển khai/kiểm chứng: tự ingest bằng model, tìm kiếm vector, Claude hooks, native agent activation end-to-end, GUI Obsidian, CI/branch protection và project production đầu tiên. MVP cung cấp cơ chế local và workflow có thể kiểm tra, không tự kích hoạt tất cả các phần đó.
 

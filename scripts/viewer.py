@@ -26,6 +26,7 @@ MAX_TOTAL_BYTES = 32 * 1024 * 1024
 MAX_DIRECTORY_ENTRIES = 8000
 MAX_DEPTH = 24
 MAX_EDGES = 20000
+MAX_DIAGNOSTICS = 10000
 ASSET_ROOT = Path(__file__).resolve().parents[1] / 'viewer'
 ASSETS = {
     '/': ('index.html', 'text/html; charset=utf-8'),
@@ -177,9 +178,11 @@ def canonical_reference(value, prefix=None):
     return value
 
 
-def validate(documents):
+def validate(documents, diagnose):
     sources, pages, ids = {}, {}, set()
     warnings = ['Structural viewer checks only; factual truth, sharing rights, review files and Git history are not verified.']
+    if documents['wiki/index.md'][1].lstrip().startswith(('---', '+++')):
+        raise invalid('invalid_index', 'The canonical index must be generated navigation, without metadata.')
     for path, (meta, body) in documents.items():
         if path == 'wiki/index.md':
             continue
@@ -227,9 +230,9 @@ def validate(documents):
     for path, meta in pages.items():
         for source in meta['sources']:
             canonical_reference(source, 'raw')
-            if source not in sources:
-                raise invalid('missing_source', 'Knowledge cites a source outside eligible shared notes.')
-        synthetic = any(sources[s]['permission'] == 'synthetic-fixture' for s in meta['sources'])
+            if not source.endswith('.md'):
+                raise invalid('unsafe_reference', 'Metadata contains an unsupported source reference.')
+        synthetic = any(sources[s]['permission'] == 'synthetic-fixture' for s in meta['sources'] if s in sources)
         if synthetic and (meta.get('fixture') is not True or meta['status'] == 'verified'):
             raise invalid()
         claims = meta.get('claims')
@@ -243,8 +246,14 @@ def validate(documents):
             wiki.strings(claim.get('applies_to'), 'claim applies_to')
             if not set(claim['sources']) <= set(meta['sources']) or not set(claim['applies_to']) <= set(meta['applies_to']):
                 raise invalid()
-            if claim['kind'] == 'evidence' and (not claim['sources'] or not set(claim['applies_to']) <= {sources[s]['version'] for s in claim['sources']}):
-                raise invalid()
+            if claim['kind'] == 'evidence':
+                if not claim['sources']:
+                    raise invalid()
+                # A missing source cannot establish its version or truth. Keep the
+                # declared claim with an error diagnostic, never invent evidence.
+                if (all(s in sources for s in claim['sources'])
+                        and not set(claim['applies_to']) <= {sources[s]['version'] for s in claim['sources']}):
+                    raise invalid()
         contradictions = meta.get('contradictions', [])
         if not isinstance(contradictions, list):
             raise invalid()
@@ -275,11 +284,13 @@ def validate(documents):
     for path, meta in sorted(pages.items()):
         expected_index.append(f"- [{wiki.inline(meta['title'])}]({quote(path[len('wiki/'):])}) — {wiki.inline(meta['summary'])} [{wiki.inline(meta['status'])}]")
     if documents['wiki/index.md'][1] != '\n'.join(expected_index) + '\n':
-        raise invalid('index_drift', 'The wiki index is stale; regenerate it through the canonical workflow.')
+        diagnose('index_drift', 'warning', 'wiki/index.md', 'body',
+                 'The wiki index differs from page metadata; regenerate it through the canonical workflow.')
     return warnings
 
 
-def local_link(source, target, eligible):
+def local_link(source, target, eligible=None):
+    """Resolve only eligible Markdown paths; never probe a referenced filesystem path."""
     try:
         parts = urlsplit(target)
         if parts.scheme or parts.netloc or parts.query or not parts.path:
@@ -288,7 +299,11 @@ def local_link(source, target, eligible):
         if decoded.startswith('/') or '\\' in decoded or any(ord(c) < 32 for c in decoded):
             return None
         resolved = posixpath.normpath(posixpath.join(posixpath.dirname(source), decoded))
-        return resolved if resolved in eligible else None
+        if (not resolved.startswith(('raw/', 'wiki/')) or not resolved.endswith('.md')
+                or resolved == 'wiki/log.md'):
+            return None
+        canonical_reference(resolved)
+        return resolved if eligible is None or resolved in eligible else None
     except (ValueError, UnicodeError):
         return None
 
@@ -354,9 +369,28 @@ def build_graph(root):
         inputs, stamps = read_snapshot(root)
         documents = {path: ({}, data.decode('utf-8')) if path == 'wiki/index.md' else parse_page(data)
                      for path, data in sorted(inputs.items())}
-        warnings = validate(documents)
+        diagnostic_map = {}
+        def diagnose(code, severity, source, section, message, target=None):
+            value = dict(code=code, severity=severity, source=source,
+                         provenance={'file': source, 'section': section}, message=message)
+            if target is not None:
+                value['target'] = target
+            key = hashlib.sha256(json_bytes(value)).hexdigest()
+            if key not in diagnostic_map and len(diagnostic_map) >= MAX_DIAGNOSTICS:
+                raise invalid('limit_exceeded', 'Knowledge exceeds viewer diagnostic limits.')
+            diagnostic_map[key] = {'id': 'diagnostic-' + key, **value}
+        warnings = validate(documents, diagnose)
+        index_drift = any(item['code'] == 'index_drift' for item in diagnostic_map.values())
         nodes, edge_map = [], {}
         def edge(source, target, kind, section, **extra):
+            if target not in documents:
+                if kind == 'link':
+                    diagnose('broken_link', 'warning', source, section,
+                             'This declared Markdown target is absent from the eligible snapshot.', target)
+                else:
+                    diagnose('missing_source', 'error', source, section,
+                             'This declared source is absent; related claims, versions and inferences remain unverified.', target)
+                return
             value = dict(source=source, target=target, kind=kind, explicit=True,
                          provenance={'file': source, 'section': section}, **extra)
             key = hashlib.sha256(json_bytes(value)).hexdigest()
@@ -364,6 +398,9 @@ def build_graph(root):
                 raise invalid('limit_exceeded', 'Knowledge exceeds viewer relationship limits.')
             edge_map[key] = {'id': 'edge-' + key, **value}
         for path, (meta, body) in documents.items():
+            body_withheld = path == 'wiki/index.md' and index_drift
+            if body_withheld:
+                body = 'Viewer notice: stale index content is withheld. Regenerate the canonical index to view its navigation.'
             kind = ('navigation' if path == 'wiki/index.md' else 'source' if path.startswith('raw/')
                     else 'concept' if path.startswith('wiki/concepts/') else 'lesson' if path.startswith('wiki/lessons/') else 'page')
             node = {'id': path, 'title': meta.get('title', 'Wiki index' if kind == 'navigation' else meta.get('origin', Path(path).stem)),
@@ -371,10 +408,10 @@ def build_graph(root):
                     'fixture': (meta.get('permission') == 'synthetic-fixture' or meta.get('fixture') is True) if kind == 'source' else meta.get('fixture', False),
                     'scope': meta.get('scope', 'shared'), 'tags': meta.get('tags', []),
                     'applies_to': [meta['version']] if kind == 'source' else meta.get('applies_to', []),
-                    'body': body, 'metadata': meta}
+                    'body': body, 'body_withheld': body_withheld, 'metadata': meta}
             nodes.append(node)
-            for href in prose_links(body):
-                target = local_link(path, href, documents)
+            for href in prose_links(body) if not body_withheld else []:
+                target = local_link(path, href)
                 if target:
                     edge(path, target, 'link', 'body')
             for target in meta.get('sources', []) if kind != 'source' else []:
@@ -391,7 +428,26 @@ def build_graph(root):
                 edge(path, meta['superseded_by'], 'superseded_by', 'metadata.superseded_by')
         source_digest = hashlib.sha256(json_bytes({name: hashlib.sha256(data).hexdigest() for name, data in sorted(inputs.items())})).hexdigest()
         edges = [edge_map[key] for key in sorted(edge_map)]
+        knowledge = {node['id'] for node in nodes if node['kind'] in ('concept', 'lesson', 'page')}
+        linked = {edge['target'] for edge in edges
+                  if edge['source'] in knowledge and edge['source'] != edge['target']}
+        for path in sorted(knowledge - linked):
+            diagnose('orphan_page', 'info', path, 'relationships',
+                     'No other knowledge page explicitly links to this page; index links do not count.')
+        diagnostics = [diagnostic_map[key] for key in sorted(diagnostic_map)]
+        by_source = {node['id']: [] for node in nodes}
+        summary = {'total': len(diagnostics), 'by_code': {}, 'by_severity': {}}
+        for diagnostic in diagnostics:
+            by_source[diagnostic['source']].append(diagnostic)
+            for field, key in (('by_code', 'code'), ('by_severity', 'severity')):
+                value = diagnostic[key]
+                summary[field][value] = summary[field].get(value, 0) + 1
+        for node in nodes:
+            own = by_source[node['id']]
+            node['diagnostic_ids'] = [diagnostic['id'] for diagnostic in own]
+            node['evidence_complete'] = not any(diagnostic['code'] == 'missing_source' for diagnostic in own)
         return {'format': FORMAT, 'source_digest': source_digest, 'nodes': nodes, 'edges': edges,
+                'diagnostics': diagnostics, 'diagnostic_summary': summary,
                 'warnings': sorted(set(warnings)), 'stats': {'nodes': len(nodes), 'edges': len(edges)},
                 'snapshot': {'revision': revision(root), 'index_updated_at': dt.datetime.fromtimestamp(stamps['wiki/index.md'][4] / 1e9, dt.timezone.utc).isoformat(),
                              'loaded_at': dt.datetime.now(dt.timezone.utc).isoformat()}}
@@ -519,8 +575,8 @@ def main():
     try:
         if args.check:
             graph = build_graph(args.root)
-            print(json.dumps({key: graph[key] for key in ('format', 'source_digest', 'stats', 'snapshot', 'warnings')}, indent=2))
-            return 0
+            print(json.dumps({key: graph[key] for key in ('format', 'source_digest', 'stats', 'snapshot', 'warnings', 'diagnostic_summary')}, indent=2))
+            return 1 if graph['diagnostic_summary']['by_severity'].get('error') else 0
         with create_server(args.root, args.port) as server:
             print(f'Local read-only viewer: http://127.0.0.1:{server.server_port}/', flush=True)
             server.serve_forever()

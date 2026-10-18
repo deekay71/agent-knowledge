@@ -51,6 +51,8 @@ class ViewerTests(unittest.TestCase):
         self.assertEqual(first['source_digest'], second['source_digest'])
         self.assertEqual(first['nodes'], second['nodes'])
         self.assertEqual(first['edges'], second['edges'])
+        self.assertEqual(first['diagnostics'], [])
+        self.assertEqual(first['diagnostic_summary'], {'total': 0, 'by_code': {}, 'by_severity': {}})
         self.assertEqual(first['snapshot']['revision'], self.base)
         self.assertTrue(first['snapshot']['loaded_at'])
         self.assertTrue(first['snapshot']['index_updated_at'])
@@ -60,6 +62,8 @@ class ViewerTests(unittest.TestCase):
             self.assertNotIn('---json', node['body'])
             self.assertIsInstance(node['metadata'], dict)
             self.assertIsInstance(node['tags'], list)
+            self.assertTrue(node['evidence_complete'])
+            self.assertEqual(node['diagnostic_ids'], [])
         for edge in first['edges']:
             self.assertTrue(edge['explicit'])
             self.assertEqual(edge['provenance']['file'], edge['source'])
@@ -129,16 +133,139 @@ class ViewerTests(unittest.TestCase):
         with self.assertRaises(viewer.ViewerError):
             self.graph()
 
-    def test_index_drift_and_missing_index_fail_closed(self):
+    def test_index_drift_is_diagnostic_but_missing_index_fails_closed(self):
         path = self.root / 'wiki/index.md'
-        path.write_text('stale index')
-        with self.assertRaises(viewer.ViewerError) as error:
-            self.graph()
-        self.assertEqual(error.exception.code, 'index_drift')
+        path.write_text('PRIVATE_INDEX_CANARY\n[unvalidated link](concepts/queue.md)\n')
+        graph = self.graph()
+        diagnostic = next(d for d in graph['diagnostics'] if d['code'] == 'index_drift')
+        self.assertEqual(diagnostic['source'], 'wiki/index.md')
+        self.assertEqual(diagnostic['severity'], 'warning')
+        self.assertEqual(graph['stats']['nodes'], 4)
+        index = next(n for n in graph['nodes'] if n['kind'] == 'navigation')
+        self.assertTrue(index['body_withheld'])
+        self.assertIn('Viewer notice', index['body'])
+        self.assertNotIn('PRIVATE_INDEX_CANARY', json.dumps(graph))
+        self.assertFalse(any(e['source'] == 'wiki/index.md' for e in graph['edges']))
         path.unlink()
         with self.assertRaises(viewer.ViewerError) as error:
             self.graph()
         self.assertEqual(error.exception.code, 'missing_index')
+
+    def test_index_with_private_or_malformed_frontmatter_is_fatal(self):
+        for body in ('---json\n{"scope":"project","permission":"denied"}\n---\nPRIVATE_INDEX_CANARY',
+                     '---\nscope: project\n---\nPRIVATE_INDEX_CANARY',
+                     '+++\nscope="project"\n+++\nPRIVATE_INDEX_CANARY'):
+            with self.subTest(body=body):
+                (self.root / 'wiki/index.md').write_text(body)
+                with self.assertRaises(viewer.ViewerError) as error:
+                    self.graph()
+                self.assertNotIn('PRIVATE_INDEX_CANARY', str(error.exception))
+
+    def test_missing_sources_keep_claim_labels_without_dangling_edges_or_verification(self):
+        (self.root / 'raw/fixture-v1.md').unlink()
+        before = self.files()
+        graph, again = self.graph(), self.graph()
+        self.assertEqual(graph['diagnostics'], again['diagnostics'])
+        self.assertEqual(graph['diagnostic_summary']['by_code']['missing_source'], 4)
+        self.assertEqual(graph['diagnostic_summary']['by_code']['broken_link'], 1)
+        eligible = {node['id'] for node in graph['nodes']}
+        self.assertNotIn('raw/fixture-v1.md', eligible)
+        self.assertTrue(all(edge['source'] in eligible and edge['target'] in eligible for edge in graph['edges']))
+        for node in graph['nodes']:
+            own = [d for d in graph['diagnostics'] if d['source'] == node['id']]
+            self.assertEqual(set(node['diagnostic_ids']), {d['id'] for d in own})
+            if node['kind'] in ('concept', 'lesson'):
+                self.assertFalse(node['evidence_complete'])
+                self.assertEqual(node['status'], 'draft')
+        lesson = next(n for n in graph['nodes'] if n['kind'] == 'lesson')
+        self.assertEqual(lesson['metadata']['claims'][0]['kind'], 'inference')
+        for diagnostic in graph['diagnostics']:
+            if diagnostic['code'] == 'missing_source':
+                self.assertEqual(diagnostic['target'], 'raw/fixture-v1.md')
+                self.assertIn('unverified', diagnostic['message'])
+                self.assertEqual(diagnostic['provenance']['file'], diagnostic['source'])
+        self.assertEqual(before, self.files())
+
+    def test_missing_source_does_not_disable_known_claim_version_or_schema_checks(self):
+        def add_missing(meta):
+            meta['sources'].append('raw/missing.md')
+            meta['applies_to'].append('Wrong/999')
+            meta['claims'][0]['applies_to'] = ['Wrong/999']
+        self.mutate(add_missing)
+        with self.assertRaises(viewer.ViewerError):
+            self.graph()
+        self.mutate(lambda m: m['claims'][0].update(sources=['raw/missing.md']))
+        graph = self.graph()
+        self.assertFalse(next(n for n in graph['nodes'] if n['kind'] == 'concept')['evidence_complete'])
+        self.mutate(lambda m: m['claims'][0].update(kind='fact'))
+        with self.assertRaises(viewer.ViewerError):
+            self.graph()
+
+    def test_missing_metadata_source_must_be_a_canonical_raw_markdown_path(self):
+        for target in ('docs/SECRET.md', 'raw/../SECRET.md', '/SECRET.md', 'raw/.git/SECRET.md', 'raw/SECRET.bin'):
+            with self.subTest(target=target):
+                self.mutate(lambda m: m.update(sources=['raw/fixture-v1.md', target]))
+                with self.assertRaises(viewer.ViewerError) as error:
+                    self.graph()
+                self.assertNotIn('SECRET', str(error.exception))
+
+    def test_broken_links_are_deduplicated_and_only_safe_eligible_paths_are_reported(self):
+        additions = ('\n[missing](../concepts/absent.md)\n[duplicate](../concepts/absent.md#heading)\n'
+                     '[encoded](../../raw/a%20missing.md)\n'
+                     '[private](../../knowledge/project/SECRET.md)\n[log](../log.md)\n'
+                     '[git](../../raw/.git/SECRET.md)\n[escape](../../../SECRET.md)\n'
+                     '[url](https://example.invalid/SECRET.md)\n[js](javascript:SECRET)\n'
+                     '[query](../concepts/absent.md?SECRET)\n'
+                     '`[inline](../concepts/INLINE.md)`\n```md\n[fence](../concepts/FENCE.md)\n```\n')
+        self.mutate(lambda m: None, additions)
+        before = self.files()
+        graph = self.graph()
+        broken = [d for d in graph['diagnostics'] if d['code'] == 'broken_link']
+        self.assertEqual({d['target'] for d in broken}, {'wiki/concepts/absent.md', 'raw/a missing.md'})
+        self.assertEqual(len(broken), 2)
+        self.assertNotIn('SECRET', json.dumps(graph['diagnostics']))
+        self.assertTrue(all(node['evidence_complete'] for node in graph['nodes']))
+        self.assertEqual(before, self.files())
+
+    def test_orphan_excludes_index_source_and_self_links_but_accepts_other_page_inbound(self):
+        original = self.root / 'wiki/concepts/queue.md'
+        meta, _ = wiki.read_page(original)
+        meta.update(id='orphan-page', title='Orphan fixture')
+        path = self.root / 'wiki/concepts/orphan.md'
+        fixtures.write(path, meta, '# Orphan\n[Self](orphan.md)\n')
+        with (self.root / 'raw/fixture-v1.md').open('a') as handle:
+            handle.write('\n[Raw backlink](../wiki/concepts/orphan.md)\n')
+        (self.root / 'wiki/index.md').write_text(wiki.index_text(self.root))
+        graph = self.graph()
+        orphans = [d for d in graph['diagnostics'] if d['code'] == 'orphan_page']
+        self.assertEqual([d['source'] for d in orphans], ['wiki/concepts/orphan.md'])
+        self.assertEqual(orphans[0]['severity'], 'info')
+        self.mutate(lambda m: None, '\n[Related page](orphan.md)\n')
+        self.assertFalse(any(d['code'] == 'orphan_page' for d in self.graph()['diagnostics']))
+
+    def test_diagnostic_limit_is_bounded_without_counting_repeated_links_twice(self):
+        self.mutate(lambda m: None, '\n[missing](missing.md)\n' * 100)
+        with mock.patch.object(viewer, 'MAX_DIAGNOSTICS', 1):
+            self.assertEqual(self.graph()['diagnostic_summary']['total'], 1)
+        self.mutate(lambda m: None, '\n[other](other.md)\n')
+        with mock.patch.object(viewer, 'MAX_DIAGNOSTICS', 1):
+            with self.assertRaises(viewer.ViewerError) as error:
+                self.graph()
+        self.assertEqual(error.exception.code, 'limit_exceeded')
+
+    def test_diagnostics_do_not_allow_private_or_invalid_lineage_to_return_partial_graph(self):
+        (self.root / 'raw/fixture-v1.md').unlink()
+        fixtures.write(self.root / 'raw/private.md', {'origin': 'SECRET', 'collected_at': '2026-01-01',
+                       'scope': 'project', 'version': 'Private/1', 'permission': 'approved'}, 'SECRET_BODY')
+        with self.assertRaises(viewer.ViewerError) as error:
+            self.graph()
+        self.assertEqual(error.exception.code, 'private_scope')
+        self.assertNotIn('SECRET', str(error.exception))
+        (self.root / 'raw/private.md').unlink()
+        self.mutate(lambda m: m.update(status='superseded', superseded_by='wiki/absent.md'))
+        with self.assertRaises(viewer.ViewerError) as error:
+            self.graph()
+        self.assertEqual(error.exception.code, 'invalid_lineage')
 
     def test_symlink_file_directory_and_selected_root_rejected(self):
         outside = self.sandbox / 'outside'
@@ -329,7 +456,22 @@ class ViewerTests(unittest.TestCase):
         summary = json.loads(checked.stdout)
         self.assertEqual(summary['stats']['nodes'], 4)
         self.assertNotIn('nodes', summary)
+        self.assertEqual(summary['diagnostic_summary']['total'], 0)
         self.assertEqual(self.files(), before)
+
+    def test_cli_check_reports_diagnostic_errors_separately_from_fatal_validation(self):
+        command = [sys.executable, str(SCRIPTS / 'viewer.py'), '--root', str(self.root), '--check']
+        (self.root / 'raw/fixture-v1.md').unlink()
+        checked = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(checked.returncode, 1, checked.stderr)
+        summary = json.loads(checked.stdout)
+        self.assertEqual(summary['diagnostic_summary']['by_severity']['error'], 4)
+        self.assertNotIn('nodes', summary)
+        self.mutate(lambda m: m.update(scope='project', title='PRIVATE_CLI_CANARY'))
+        checked = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(checked.returncode, 2)
+        self.assertEqual(checked.stdout, '')
+        self.assertNotIn('PRIVATE_CLI_CANARY', checked.stderr)
 
 
 # Give the HTTP suite only shared fixture helpers, not duplicate graph cases.
@@ -451,6 +593,39 @@ class ViewerHTTPTests(unittest.TestCase):
             status, _, body = self.request('/api/graph')
         self.assertEqual(status, 409)
         self.assertEqual(json.loads(body)['error']['code'], 'concurrent_change')
+
+    def test_diagnostic_snapshot_returns_200_then_private_change_clears_all_data(self):
+        self.start()
+        (self.root / 'raw/fixture-v1.md').unlink()
+        self.mutate(lambda m: None, '\n[Missing page](missing.md)\n')
+        before = self.files()
+        status, _, body = self.request('/api/graph')
+        self.assertEqual(status, 200, body)
+        graph = json.loads(body)
+        self.assertEqual(graph['diagnostic_summary']['by_severity']['error'], 4)
+        self.assertFalse(next(n for n in graph['nodes'] if n['kind'] == 'concept')['evidence_complete'])
+        self.assertEqual(before, self.files())
+        fixtures.write(self.root / 'raw/private.md', {'origin': 'PRIVATE_HTTP_CANARY', 'collected_at': '2026-01-01',
+                       'scope': 'project', 'version': 'Private/1', 'permission': 'approved'}, 'PRIVATE_HTTP_CANARY')
+        status, _, body = self.request('/api/graph')
+        self.assertEqual(status, 422)
+        self.assertNotIn(b'PRIVATE_HTTP_CANARY', body)
+        self.assertEqual(set(json.loads(body)), {'error'})
+
+    def test_drifted_index_is_withheld_and_private_index_frontmatter_returns_422(self):
+        self.start()
+        path = self.root / 'wiki/index.md'
+        path.write_text('PRIVATE_INDEX_CANARY\n[unsafe](../docs/private.md)\n')
+        status, _, body = self.request('/api/graph')
+        self.assertEqual(status, 200, body)
+        self.assertNotIn(b'PRIVATE_INDEX_CANARY', body)
+        graph = json.loads(body)
+        self.assertTrue(next(n for n in graph['nodes'] if n['kind'] == 'navigation')['body_withheld'])
+        path.write_text('---json\n{"scope":"project"}\n---\nPRIVATE_INDEX_CANARY')
+        status, _, body = self.request('/api/graph')
+        self.assertEqual(status, 422)
+        self.assertNotIn(b'PRIVATE_INDEX_CANARY', body)
+        self.assertEqual(set(json.loads(body)), {'error'})
 
     def test_static_symlink_fails_closed(self):
         self.start()

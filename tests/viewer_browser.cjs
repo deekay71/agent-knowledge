@@ -57,7 +57,7 @@ async function server(root) {
   });
 }
 
-async function open(root, label, viewport = {width: 1440, height: 1000}) {
+async function open(root, label, viewport = {width: 1440, height: 1000}, options = {}) {
   const url = await server(root);
   const context = await browser.newContext({viewport, deviceScaleFactor: 1,
     reducedMotion: 'reduce', locale: 'vi-VN', timezoneId: 'UTC'});
@@ -89,8 +89,8 @@ async function open(root, label, viewport = {width: 1440, height: 1000}) {
   const page = await context.newPage();
   page.setDefaultTimeout(10000);
   page.on('pageerror', error => report.page_errors.push({case: label, message: error.message}));
-  await page.goto(url, {waitUntil: 'domcontentloaded'});
-  await ready(page);
+  await page.goto(url + (options.hash || ''), {waitUntil: 'domcontentloaded'});
+  await ready(page, options.timeout || 30000);
   const timings = await page.evaluate(() => ({graph_ready_ms: performance.now(),
     layout_ms: window.__browserMetrics.layouts.at(-1) ?? null,
     api_ms: performance.getEntriesByType('resource').find(e => e.name.endsWith('/api/graph'))?.duration ?? null}));
@@ -100,10 +100,10 @@ async function open(root, label, viewport = {width: 1440, height: 1000}) {
   return value;
 }
 
-async function ready(page) {
+async function ready(page, timeout = 30000) {
   await page.waitForFunction(() => window.wikiViewer?.getSnapshot() &&
     !document.getElementById('refresh').disabled && document.getElementById('graph-state').hidden,
-    null, {timeout: 30000});
+    null, {timeout});
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 async function screenshot(page, name) {
@@ -118,7 +118,11 @@ async function stats(page) {
 }
 async function selectNote(page, id) {
   await page.locator('#search').fill(id);
+  const paths = await page.locator('#search-results .result-path').allTextContents();
+  const index = paths.indexOf(id);
+  assert(index >= 0, 'Exact path is present among full-text matches: ' + id);
   await page.locator('#search').press('ArrowDown');
+  for (let i = 0; i < index; i++) await page.locator('#search').press('ArrowDown');
   await page.locator('#search').press('Enter');
   await page.waitForFunction(id => window.wikiViewer.cy.getElementById(id).hasClass('active'), id);
   assert.equal(await page.locator('#detail-header .note-path').innerText(), id);
@@ -181,9 +185,11 @@ async function main() {
 
   await group('title and path search, keyboard focus, list selection and link directions', async () => {
     await page.locator('#search').fill('Fixture queue');
-    assert.equal(await page.locator('#search-results [role=option]').count(), 1);
+    const titleResults = await page.locator('#search-results .result-path').allTextContents();
+    assert(titleResults.includes(queue), 'Full-text search includes the title match, alongside legitimate body matches');
     await page.locator('#search').press('ArrowDown');
     assert.equal(await page.locator('#search').getAttribute('aria-activedescendant'), 'search-result-0');
+    for (let i = 0; i < titleResults.indexOf(queue); i++) await page.locator('#search').press('ArrowDown');
     await page.locator('#search').press('Enter');
     assert.equal(await page.locator('#detail-header .note-path').innerText(), queue);
     await page.locator('#tab-links').click();
@@ -403,6 +409,9 @@ async function main() {
     await screenshot(p, 'benchmark-301.png');
     return {nodes: 301, edges: 1403, metrics: report.metrics.benchmark_301_nodes};
   }, benchmark.page);
+
+  await require('./viewer_phases_browser.cjs')({repo, temporary, python, report, open, ready,
+    stats, selectNote, screenshot, group, mutateNote, sleep});
 
   await group('all browser contexts make no external requests, uncaught page errors or CSP violations', async () => {
     for (const item of opened) {

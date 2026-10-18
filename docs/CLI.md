@@ -11,7 +11,7 @@ tracked, Git hooks also validate its staged projection against staged canonical 
 
 Local canonical viewer: `python3 scripts/viewer.py [--root ROOT] [--port PORT] [--check]`.
 Default port 8765; bind is fixed to `127.0.0.1`. Port 0 selects an available port; use the printed
-URL. `--check` prints a validated snapshot summary without starting HTTP or exporting files.
+URL. `--check` prints a snapshot summary and structural diagnostic counts without starting HTTP or exporting files.
 There is no `--export` or host override. It reads canonical raw/wiki (excluding wiki/log.md),
 not the generated vault. See [viewer guide](VIEWER.md) for filters, provenance and resource limits.
 Its help and starter `--check` have been run; browser/security/performance validation is separate.
@@ -80,7 +80,9 @@ commits, network or model calls occur. Eight topics yield 49 viewer nodes and 22
 edges. Example: `python3 scripts/viewer_demo.py --output ../viewer-demo --topics 8`.
 Its help has been run; generated fixture counts are not performance guarantees.
 
-Both viewer commands return 0 on success and 2 on usage/validation/operational errors.
+Viewer `--check` returns 0 for an eligible snapshot with at most warnings/info, 1 when
+the snapshot has error diagnostics such as missing declared sources, and 2 on fatal
+validation, usage or operational errors. The demo generator returns 0 on success and 2 on error.
 The HTTP viewer exits normally with Ctrl+C. It does not modify canonical files, the log, Git
 state or the portable vault. The demo generator writes only its newly created destination.
 
