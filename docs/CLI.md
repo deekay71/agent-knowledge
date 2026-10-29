@@ -20,7 +20,9 @@ python3 scripts/wiki.py --help
 Global syntax: `python3 scripts/wiki.py [--root ROOT] COMMAND ...`.
 `--root` must appear BEFORE COMMAND. Default root is the repository containing scripts/wiki.py,
 not the shell's current directory. Use an explicit project root for pin. Python 3.14.8 and Git 2.50.1
-were tested; no third-party Python packages are required.
+were tested; no third-party Python packages are required. Minimum versions are Python 3.9 and
+Git 2.31 (`rev-parse --path-format`). [CI](../.github/workflows/ci.yml) runs the suite on Python
+3.9 and 3.13, history lint against the pull request base, and the vault check.
 
 | Existing command | Exact arguments | Example | Validation |
 |---|---|---|---|

@@ -27,6 +27,11 @@ detached superproject, in-progress Git operations, and ignored-file overwrite co
 It does not recurse into nested submodules. Missing history is never fetched automatically. It deliberately leaves a gitlink diff for review. Rollback is the same
 operation using a known old SHA; it does not delete history. CLI never performs network access.
 
+A pin also selects code. Projects using the Codex hook template run
+`knowledge/shared/scripts/agent_hooks.py` from the pinned commit on every prompt, and Codex trust
+covers the hook definition, not the script it calls. Before moving a pin, review
+`git -C knowledge/shared diff OLD_SHA NEW_SHA -- scripts .codex .githooks` as well as the knowledge diff.
+
 For contribution, use a separate writable wiki clone (not the project submodule). A clean
 main or detached source checkout may create a new contribution worktree; run `wiki.py --root CLONE worktree NEW_PATH contrib/TOPIC`.
 Read POLICY.md, ingest and review there. Commit wiki first, review/merge, push the accepted
