@@ -4,3 +4,8 @@ __pycache__/
 .demo/
 .obsidian/
 .vault.export.lock
+# File-manager metadata (Finder, Explorer, macOS on non-HFS volumes)
+.DS_Store
+._*
+Thumbs.db
+desktop.ini

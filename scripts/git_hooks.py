@@ -144,6 +144,9 @@ def check_staged_vault(snapshot):
 def check(root, merge=False):
     root = root_path(root)
     staged = entries(root)
+    for name, _, _ in staged:
+        if name.split('/')[0] in ('raw', 'wiki', 'vault') and wiki.os_metadata(name.split('/')[-1]):
+            raise ValueError('OS metadata file staged in knowledge: ' + name + '; unstage it with git rm --cached')
     if not any(name.startswith('wiki/') for name, _, _ in staged) or not any(name.startswith('raw/') for name, _, _ in staged):
         raise ValueError('Target must contain staged raw/ and wiki/ knowledge; missing directory or unrelated repository')
     parents = baseline_commits(root)

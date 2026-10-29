@@ -16,6 +16,16 @@ from urllib.parse import quote
 OPERATIONS = {'ingest', 'review', 'maintain', 'query', 'index', 'lint'}
 STATUSES = {'draft', 'reviewed', 'verified', 'deprecated', 'superseded'}
 LINK = re.compile(r'(?<!\\)\[[^\]\n]*(?<!\\)\]\(([^)\n]+)\)')
+# Authors write their own calendar date. Civil time zones run up to UTC+14, so a date one day
+# after the current UTC date is still "today" somewhere (e.g. 00:00-06:59 in UTC+7).
+MAX_DATE_AHEAD_OF_UTC = dt.timedelta(days=1)
+# Metadata files that file managers create by themselves (Finder, Explorer, macOS on non-HFS
+# volumes). They are never knowledge: local reads skip them; the Git hook refuses to commit them.
+OS_METADATA_FILES = {'.DS_Store', 'Thumbs.db', 'desktop.ini'}
+
+
+def os_metadata(name):
+    return name in OS_METADATA_FILES or name.startswith('._')
 
 
 def git_bytes(root, *args):
@@ -121,6 +131,8 @@ def inventory(root, folder):
             inside(root, str(path.relative_to(root.resolve())))
         for name in files:
             path = Path(current)/name
+            if os_metadata(name) and stat.S_ISREG(path.stat().st_mode):
+                continue
             if not stat.S_ISREG(path.stat().st_mode) or path.suffix != '.md':
                 raise ValueError('Only regular Markdown files supported: ' + str(path.relative_to(root.resolve())))
             found.append(path)
@@ -162,7 +174,7 @@ def date(value, field):
     if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
         raise ValueError('Expected ISO date: ' + field)
     result = dt.date.fromisoformat(value)
-    if result > dt.datetime.now(dt.timezone.utc).date():
+    if result > dt.datetime.now(dt.timezone.utc).date() + MAX_DATE_AHEAD_OF_UTC:
         raise ValueError('Future date: ' + field)
     return result
 
