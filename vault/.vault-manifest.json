@@ -1,21 +1,21 @@
 {
   "files": {
     "Home.md": "b10333aff970e1e2b14f1cd6ad978be0223fcb88224fe8b0efd99480eadc6872",
-    "graph.json": "e8f6b3a8b080d62df55cad971f6c012a30e6a20cb835b3830fbde66bb38b5981",
+    "graph.json": "8a3496f86c1c5c29038e88ea0f42d6f3a9824f1ec37195882de80095051f8ee5",
     "raw/fixture-v1.md": "cff6987ff0c6b746b99da9aa30e408b23ab3fce260aa359c662a678cb059ccdf",
-    "wiki/concepts/queue.md": "56b2c1634f09b8525ff2ca817da583368e05ef9b323168bac24c832dddc9965f",
-    "wiki/index.md": "32a5fe21c1f18d6ddee1cab1a3e6671fb19dd1976884d85b14887f4425b6ddb1",
-    "wiki/lessons/versioning.md": "cc6ef16655cf2097223d70698fc1fcf4e998a34bc835d054172d623c490d4edf",
-    "wiki/log.md": "ff3cda211cbdcd83ca65d512fa0d4c9b420072fc9302fb21722a076a8047797e"
+    "wiki/concepts/queue.md": "a5572c3e0f12c802dc5d2203664d3373630cefb7129cfc7b6b1f18cbf3ebcd08",
+    "wiki/index.md": "0c4b780b818f5a2389ebfd4a333b44dec45f5290734928c1e00d4f619e285675",
+    "wiki/lessons/versioning.md": "f0de5a4a071fc497269de2040141e3b113932755375b3111e4d41405105baa31",
+    "wiki/log.md": "ab46ba98883ce268c3e9eacf98629adeef4ac95fefc9b61c618926ed8c449235"
   },
   "format": 1,
   "generator": "agent-knowledge/export_vault",
   "inputs": {
     "raw/fixture-v1.md": "ae754a1cd453de960f6054bc1562d6f87dee4fccfd846928701efff54d2a28d0",
-    "wiki/concepts/queue.md": "f12686d8f290b9651a18d24f234436296ef924b305130bdee06d26265dc378d3",
-    "wiki/index.md": "2579c3c0ee403bebf29a196aefd8f93d2676ea93a5afe31757b9e37d9d2e4284",
-    "wiki/lessons/versioning.md": "2b8d904c58e891f58bdbf1e17ec21ea76a13722b80f9d1777e8f7a744491efd8",
-    "wiki/log.md": "0602e6627a4f8148b847fc6e30762a66d5b27450ab8cd262df991fff41b45964"
+    "wiki/concepts/queue.md": "86b5d3186492c6cc9e289d523460e3204e9df29d68cd1a97f315db1fcd5757e6",
+    "wiki/index.md": "3323443d6122dc038c05604a2a08cea714563d12b61ec32b16fa6f3f16e909b7",
+    "wiki/lessons/versioning.md": "4a8b8e41ecf2f7810ffe4699bf42c014eaf512ec3b01fa0d500e314eb75c2050",
+    "wiki/log.md": "e7d2ba8be4697c616767e8ec4fd64f9b75572ec43d27997173f771aaf6fcd6a1"
   },
-  "source_digest": "4f57f85415e52a56b2fec309b38dfc259577a90dfaae1da9c17b0f1f0f58d106"
+  "source_digest": "82e966da9a2b4acb91a358cfb56c52ef55a5691fdb292bcafa4cf6d5d045fb4c"
 }

@@ -6,3 +6,6 @@
 - {"at": "2026-10-15T08:11:29.271084+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
 - {"at": "2026-10-16T10:22:55.368620+00:00", "operation": "maintain", "detail": "Implemented repository-local staged Git hooks and read-only Codex lifecycle workflow hooks. Handler/integration tests; native Codex trust remains pending. No automatic shared ingest or publication."}
 - {"at": "2026-10-16T10:22:55.486915+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
+- {"at": "2026-10-29T04:22:46.990349+00:00", "operation": "index", "detail": "Regenerated navigation"}
+- {"at": "2026-10-29T04:22:47.069811+00:00", "operation": "maintain", "detail": "Fixed review-found drift: concept summary no longer claims a migration lesson absent from v1; lesson H1 matches its title. No claim, source or version changes."}
+- {"at": "2026-10-29T04:22:47.166515+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}

@@ -1,7 +1,7 @@
 ---
 generated: true
 canonical_path: "wiki/log.md"
-source_sha256: "0602e6627a4f8148b847fc6e30762a66d5b27450ab8cd262df991fff41b45964"
+source_sha256: "e7d2ba8be4697c616767e8ec4fd64f9b75572ec43d27997173f771aaf6fcd6a1"
 note_type: "navigation"
 ---
 
@@ -18,4 +18,7 @@ note_type: "navigation"
 - {"at": "2026-10-15T08:11:29.271084+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
 - {"at": "2026-10-16T10:22:55.368620+00:00", "operation": "maintain", "detail": "Implemented repository-local staged Git hooks and read-only Codex lifecycle workflow hooks. Handler/integration tests; native Codex trust remains pending. No automatic shared ingest or publication."}
 - {"at": "2026-10-16T10:22:55.486915+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
+- {"at": "2026-10-29T04:22:46.990349+00:00", "operation": "index", "detail": "Regenerated navigation"}
+- {"at": "2026-10-29T04:22:47.069811+00:00", "operation": "maintain", "detail": "Fixed review-found drift: concept summary no longer claims a migration lesson absent from v1; lesson H1 matches its title. No claim, source or version changes."}
+- {"at": "2026-10-29T04:22:47.166515+00:00", "operation": "lint", "detail": {"errors": [], "warnings": [], "history_checked": true}}
 ```

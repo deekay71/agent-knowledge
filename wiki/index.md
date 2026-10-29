@@ -2,5 +2,5 @@
 
 Generated navigation; edit page metadata, then run index.
 
-- [Fixture queue capacity](concepts/queue.md) — Synthetic version-scoped capacity and migration lesson. [draft]
+- [Fixture queue capacity](concepts/queue.md) — Synthetic version-scoped queue capacity. [draft]
 - [Fixture version lesson](lessons/versioning.md) — Preserve version boundaries when synthesizing. [draft]

@@ -2,7 +2,7 @@
 {
   "id": "queue-capacity",
   "title": "Fixture queue capacity",
-  "summary": "Synthetic version-scoped capacity and migration lesson.",
+  "summary": "Synthetic version-scoped queue capacity.",
   "scope": "shared",
   "tags": [
     "fixture",
@@ -12,7 +12,7 @@
   "sources": [
     "raw/fixture-v1.md"
   ],
-  "updated_at": "2026-10-15",
+  "updated_at": "2026-10-29",
   "applies_to": [
     "FixtureQueue/1"
   ],

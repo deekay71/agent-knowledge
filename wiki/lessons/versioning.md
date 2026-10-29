@@ -11,7 +11,7 @@
   "sources": [
     "raw/fixture-v1.md"
   ],
-  "updated_at": "2026-10-15",
+  "updated_at": "2026-10-29",
   "applies_to": [
     "FixtureQueue/1"
   ],
@@ -30,5 +30,5 @@
   ]
 }
 ---
-# Fixture lesson
+# Fixture version lesson
 Inference from this fixture only. See [capacity concept](../concepts/queue.md).
