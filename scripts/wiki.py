@@ -22,6 +22,8 @@ MAX_DATE_AHEAD_OF_UTC = dt.timedelta(days=1)
 # Metadata files that file managers create by themselves (Finder, Explorer, macOS on non-HFS
 # volumes). They are never knowledge: local reads skip them; the Git hook refuses to commit them.
 OS_METADATA_FILES = {'.DS_Store', 'Thumbs.db', 'desktop.ini'}
+# Query ranking: where a word occurs says how relevant the page is. Ties sort by path.
+QUERY_FIELD_WEIGHTS = (('title', 8), ('tags', 4), ('summary', 3), ('claims', 2), ('body', 1))
 
 
 def os_metadata(name):
@@ -466,22 +468,38 @@ def update_index(root):
             raise
 
 
+def folded(text):
+    return ' '.join(text.casefold().split())
+
+
 def query(root, term, version, limit=5):
     nonempty(term, 'query term'); nonempty(version, 'query version')
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
+        raise ValueError('Query limit must be a positive integer')
     result = lint(root)
     if result['errors']:
         raise ValueError('Query blocked by lint: ' + '; '.join(result['errors']))
+    phrase = folded(term)
+    words = phrase.split()
     found = []
     for p in pages(root):
         m, body = read_page(p)
         if m['status'] in ('deprecated', 'superseded') or version not in m['applies_to']:
             continue
         claims = [c for c in m['claims'] if version in c['applies_to']]
-        searchable = ' '.join([m['title'], m['summary'], body, *m['tags'], *(c['text'] for c in claims)])
-        if not claims or term.casefold() not in searchable.casefold():
+        if not claims:
             continue
-        found.append({'page': str(p.relative_to(root.resolve())), 'status': m['status'], 'fixture': m.get('fixture', False), 'claims': claims, 'contradictions': m.get('contradictions', []), 'warnings': result['warnings'], 'validation': 'structural-only; history and semantic truth not established'})
-    return found[:limit]
+        fields = {'title': folded(m['title']), 'tags': folded(' '.join(m['tags'])), 'summary': folded(m['summary']),
+                  'claims': folded(' '.join(c['text'] for c in claims)), 'body': folded(body)}
+        # Every word must occur somewhere, in any order; a multi-word term need not appear verbatim.
+        if not all(any(word in text for text in fields.values()) for word in words):
+            continue
+        score = sum(weight * sum(fields[name].count(word) for word in words) for name, weight in QUERY_FIELD_WEIGHTS)
+        if len(words) > 1:
+            score += sum(weight for name, weight in QUERY_FIELD_WEIGHTS if phrase in fields[name])
+        found.append((-score, p.relative_to(root.resolve()).as_posix(), {'page': str(p.relative_to(root.resolve())), 'status': m['status'], 'fixture': m.get('fixture', False), 'claims': claims, 'contradictions': m.get('contradictions', []), 'warnings': result['warnings'], 'validation': 'structural-only; history and semantic truth not established'}))
+    found.sort(key=lambda row: row[:2])
+    return [row[2] for row in found[:limit]]
 
 
 def pin(project, revision):
@@ -529,7 +547,7 @@ def main():
     s = p.add_subparsers(dest='command', required=True)
     l = s.add_parser('lint'); l.add_argument('--base'); l.add_argument('--merge-parent'); l.add_argument('--record', action='store_true')
     s.add_parser('index')
-    q = s.add_parser('query'); q.add_argument('term'); q.add_argument('--version', required=True); q.add_argument('--record', action='store_true')
+    q = s.add_parser('query'); q.add_argument('term'); q.add_argument('--version', required=True); q.add_argument('--limit', type=int, default=5, help='maximum pages to return (default 5)'); q.add_argument('--record', action='store_true')
     r = s.add_parser('record'); r.add_argument('operation', choices=['ingest', 'review', 'maintain', 'query']); r.add_argument('detail')
     w = s.add_parser('worktree'); w.add_argument('path', type=Path); w.add_argument('branch')
     u = s.add_parser('pin'); u.add_argument('sha')
@@ -541,7 +559,7 @@ def main():
             print(json.dumps(result, indent=2)); return bool(result['errors'])
         if a.command == 'index': update_index(root)
         elif a.command == 'query':
-            result = query(root, a.term, a.version)
+            result = query(root, a.term, a.version, a.limit)
             if a.record: record(root, 'query', {'term': a.term, 'version': a.version, 'pages': [r['page'] for r in result]})
             print(json.dumps(result, indent=2))
         elif a.command == 'record': record(root, a.operation, a.detail)

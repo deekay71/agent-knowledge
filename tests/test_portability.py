@@ -1,6 +1,7 @@
-"""Regressions for review findings: local dates ahead of UTC, OS metadata files
-and Windows line-ending conversion."""
+"""Regressions for review findings: local dates ahead of UTC, OS metadata files,
+Windows line-ending conversion and query ranking."""
 import datetime as dt
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -127,6 +128,67 @@ class PortabilityTests(unittest.TestCase):
         base = demo.commit(self.root, 'Archive a CRLF source')
         self.assertEqual(wiki.git_bytes(self.root, 'show', 'HEAD:raw/crlf-source.md'), raw.read_bytes())
         self.assertEqual(wiki.lint(self.root, base)['errors'], [])
+
+
+class QueryRankingTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = (Path(self.temp.name) / 'repo').resolve()
+        self.root.mkdir()
+        wiki.git(self.root, 'init', '-b', 'contrib/query')
+        fixtures.seed(self.root)
+        template = (self.root / 'wiki/concepts/queue.md').read_text()
+        # Five pages that only mention the term, sorting before the page that is about it.
+        # The term "backlog" appears nowhere in the seeded fixture pages.
+        for number in range(5):
+            self.add_page(template, f'a{number}', f'filler-{number}', f'Filler {number}',
+                          'Mentions a backlog in passing.', ['fixture'])
+        self.add_page(template, 'zz-backlog-guide', 'backlog-guide', 'Backlog guide',
+                      'Everything about the backlog.', ['fixture', 'backlog'])
+        (self.root / 'wiki/index.md').write_text(wiki.index_text(self.root))
+        self.assertEqual(wiki.lint(self.root)['errors'], [])
+
+    def add_page(self, template, name, page_id, title, summary, tags):
+        path = self.root / f'wiki/concepts/{name}.md'
+        path.write_text(template)
+        meta, body = wiki.read_page(path)
+        meta.update(id=page_id, title=title, summary=summary, tags=tags)
+        fixtures.write(path, meta, body)
+
+    def pages(self, *args, **kwargs):
+        return [hit['page'] for hit in wiki.query(self.root, *args, **kwargs)]
+
+    def test_title_match_ranks_first_even_when_it_sorts_last(self):
+        pages = self.pages('backlog', 'FixtureQueue/1')
+        self.assertEqual(pages, ['wiki/concepts/zz-backlog-guide.md'] + [f'wiki/concepts/a{n}.md' for n in range(4)])
+
+    def test_ties_keep_deterministic_path_order(self):
+        pages = self.pages('passing', 'FixtureQueue/1')
+        self.assertEqual(pages, [f'wiki/concepts/a{n}.md' for n in range(5)])
+
+    def test_words_may_appear_in_any_order_but_all_must_match(self):
+        self.assertEqual(self.pages('guide backlog', 'FixtureQueue/1'), ['wiki/concepts/zz-backlog-guide.md'])
+        self.assertEqual(self.pages('backlog nonexistentword', 'FixtureQueue/1'), [])
+
+    def test_limit_is_configurable_and_validated(self):
+        self.assertEqual(len(self.pages('backlog', 'FixtureQueue/1', limit=10)), 6)
+        self.assertEqual(len(self.pages('backlog', 'FixtureQueue/1', limit=2)), 2)
+        for bad in (0, -1, True, '3'):
+            with self.subTest(limit=bad), self.assertRaisesRegex(ValueError, 'limit'):
+                wiki.query(self.root, 'backlog', 'FixtureQueue/1', limit=bad)
+        cli = [sys.executable, str(REPO / 'scripts/wiki.py'), '--root', str(self.root), 'query', 'backlog',
+               '--version', 'FixtureQueue/1']
+        ok = subprocess.run(cli + ['--limit', '1'], capture_output=True, text=True)
+        self.assertEqual(ok.returncode, 0, ok.stderr)
+        self.assertEqual([hit['page'] for hit in json.loads(ok.stdout)], ['wiki/concepts/zz-backlog-guide.md'])
+        bad = subprocess.run(cli + ['--limit', '0'], capture_output=True, text=True)
+        self.assertEqual(bad.returncode, 2)
+        self.assertIn('limit', bad.stderr)
+        self.assertNotIn('Traceback', bad.stderr)
+
+    def test_version_scope_still_filters_before_ranking(self):
+        self.assertEqual(self.pages('backlog', 'FixtureQueue/2'), [])
 
 
 if __name__ == '__main__':
