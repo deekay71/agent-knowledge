@@ -20,13 +20,15 @@ python3 scripts/wiki.py --help
 Global syntax: `python3 scripts/wiki.py [--root ROOT] COMMAND ...`.
 `--root` must appear BEFORE COMMAND. Default root is the repository containing scripts/wiki.py,
 not the shell's current directory. Use an explicit project root for pin. Python 3.14.8 and Git 2.50.1
-were tested; no third-party Python packages are required.
+were tested; no third-party Python packages are required. Minimum versions are Python 3.9 and
+Git 2.31 (`rev-parse --path-format`). [CI](../.github/workflows/ci.yml) runs the suite on Python
+3.9 and 3.13, history lint against the pull request base, and the vault check.
 
 | Existing command | Exact arguments | Example | Validation |
 |---|---|---|---|
 | lint | `[--base BASE] [--merge-parent MERGE_PARENT] [--record]` | `python3 scripts/wiki.py lint --base HEAD` | Help, subprocess smoke, structural/history/merge regressions |
 | index | none | `python3 scripts/wiki.py index` | Help, smoke, rename repair and failure rollback tests |
-| query | `term --version VERSION [--record]` | `python3 scripts/wiki.py query queue --version FixtureQueue/1` | Help, smoke, exact version/source/private-path tests |
+| query | `term --version VERSION [--limit N] [--record]` | `python3 scripts/wiki.py query queue --version FixtureQueue/1` | Help, smoke, exact version/source/private-path and ranking tests |
 | record | `{ingest,review,maintain,query} detail` | `python3 scripts/wiki.py record ingest 'Added an authorized source and updated the concept'` | Help, smoke, Unicode/invalid log/lock tests |
 | worktree | `path branch` | `python3 scripts/wiki.py worktree /absolute/new/wiki-contrib contrib/topic` | Help, smoke and real Git from main/detached/dirty sources |
 | pin | `sha` | `python3 scripts/wiki.py --root /absolute/project pin FULL_LOCAL_COMMIT_SHA` | Help, real submodule upgrade/rollback/safety smoke tests |
@@ -57,9 +59,11 @@ missing/abbreviated/non-commit SHAs and leaves only the gitlink diff for manual 
 All CLI mutations use a cooperative per-checkout lock. They do not fetch, commit or push.
 
 Exit status: 0 success (lint warnings do not fail); 1 lint errors; 2 usage/safety/operational error.
-No-baseline lint warns that history was not checked. Query returns at most five matching pages
-in path order with scoped claims, citations, warnings and a structural-only validation label.
-Query first runs structural checks of this small wiki; it is not ranked/vector search or an LLM.
+No-baseline lint warns that history was not checked. Query returns up to `--limit` (default five)
+matching pages with scoped claims, citations, warnings and a structural-only validation label.
+Every word of the term must occur in the page, in any order. Pages rank by where the words occur
+(title, then tags, summary, claims, body); ties keep path order. Query first runs structural
+checks of this small wiki; it is keyword ranking, not vector search or an LLM.
 An empty result is not proof that knowledge does not exist. No automatic inference saving occurs.
 
 ## Other executable entrypoints

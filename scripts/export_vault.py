@@ -295,6 +295,8 @@ def existing_files(output):
             path = Path(current)/name
             if not stat.S_ISREG(path.stat().st_mode):
                 raise ValueError('Nonregular vault file: ' + name)
+            if wiki.os_metadata(name):
+                continue  # Finder/Explorer metadata: not managed, never compared or deleted.
             found[path.relative_to(output).as_posix()] = path.read_bytes()
     return found
 

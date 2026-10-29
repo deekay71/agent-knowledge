@@ -1,7 +1,7 @@
 ---
 id: "queue-capacity"
 title: "Fixture queue capacity"
-summary: "Synthetic version-scoped capacity and migration lesson."
+summary: "Synthetic version-scoped queue capacity."
 scope: "shared"
 tags:
   - "fixture"
@@ -9,13 +9,13 @@ tags:
 status: "draft"
 sources:
   - "raw/fixture-v1.md"
-updated_at: "2026-10-15"
+updated_at: "2026-10-29"
 applies_to:
   - "FixtureQueue/1"
 fixture: true
 generated: true
 canonical_path: "wiki/concepts/queue.md"
-source_sha256: "f12686d8f290b9651a18d24f234436296ef924b305130bdee06d26265dc378d3"
+source_sha256: "86b5d3186492c6cc9e289d523460e3204e9df29d68cd1a97f315db1fcd5757e6"
 note_type: "wiki"
 ---
 
@@ -35,7 +35,7 @@ See [version lesson](../lessons/versioning.md).
 - **status:** draft
 - **scope:** shared
 - **applies_to:** FixtureQueue/1
-- **updated_at:** 2026-10-15
+- **updated_at:** 2026-10-29
 
 **sources:**
 

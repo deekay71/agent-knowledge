@@ -1,0 +1,6 @@
+# Lint, history checks and the vault check compare bytes (archived raw sources, the
+# append-only log, generated vault files). A checkout must not rewrite line endings, so keep
+# LF on every platform, including Git for Windows' default core.autocrlf=true.
+* text=auto eol=lf
+# Archived sources keep exactly the bytes they were committed with.
+raw/** -text

@@ -8,19 +8,19 @@ tags:
 status: "draft"
 sources:
   - "raw/fixture-v1.md"
-updated_at: "2026-10-15"
+updated_at: "2026-10-29"
 applies_to:
   - "FixtureQueue/1"
 fixture: true
 generated: true
 canonical_path: "wiki/lessons/versioning.md"
-source_sha256: "2b8d904c58e891f58bdbf1e17ec21ea76a13722b80f9d1777e8f7a744491efd8"
+source_sha256: "4a8b8e41ecf2f7810ffe4699bf42c014eaf512ec3b01fa0d500e314eb75c2050"
 note_type: "wiki"
 ---
 
 > Generated reading view. Edit the canonical repository file, then export again.
 
-# Fixture lesson
+# Fixture version lesson
 Inference from this fixture only. See [capacity concept](../concepts/queue.md).
 
 ## Knowledge metadata
@@ -30,7 +30,7 @@ Inference from this fixture only. See [capacity concept](../concepts/queue.md).
 - **status:** draft
 - **scope:** shared
 - **applies_to:** FixtureQueue/1
-- **updated_at:** 2026-10-15
+- **updated_at:** 2026-10-29
 
 **sources:**
 
